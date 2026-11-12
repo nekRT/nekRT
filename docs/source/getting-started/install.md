@@ -1,6 +1,6 @@
 # Installation
 
-Kingfisher is built with CMake. Its libraries ([MFEM](https://mfem.org), [fmt](https://fmt.dev), [rapidyaml](https://github.com/biojppm/rapidyaml), and [GoogleTest](https://google.github.io/googletest/) for the tests) are downloaded and built automatically by [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake) the first time the project is configured.
+nekRT is built with CMake. Its libraries ([MFEM](https://mfem.org), [fmt](https://fmt.dev), [rapidyaml](https://github.com/biojppm/rapidyaml), and [GoogleTest](https://google.github.io/googletest/) for the tests) are downloaded and built automatically by [CPM.cmake](https://github.com/cpm-cmake/CPM.cmake) the first time the project is configured.
 
 ## Prerequisites
 
@@ -17,7 +17,7 @@ From the root of the repository:
 $ cmake --workflow --preset release
 ```
 
-This configures and builds an optimized `kingfisher` executable at `build/release/kingfisher`. The first configure downloads and compiles MFEM, so it takes a few minutes. Later builds reuse it.
+This configures and builds an optimized `nekrt` executable at `build/release/nekrt`. The first configure downloads and compiles MFEM, so it takes a few minutes. Later builds reuse it.
 
 See [](../developer-guide/building.md) for the other presets, including debug builds and running the tests.
 

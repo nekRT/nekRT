@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2026, Liam Pohlmann
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
-#ifndef KINGFISHER_UTILS_NUMERICS_H_
-#define KINGFISHER_UTILS_NUMERICS_H_
+#ifndef NEKRT_UTILS_NUMERICS_H_
+#define NEKRT_UTILS_NUMERICS_H_
 
 #include <cmath>
 #include <limits>
 
-namespace kingfisher {
+namespace nekrt {
 /// @brief General tolerance value for double comparisons
 inline constexpr double kTolerance = 1e-15;
 
@@ -41,6 +41,6 @@ inline double RelativeError(const double new_val, const double old_val) {
     return old_val == 0.0 ? 0.0 : std::numeric_limits<double>::infinity();
   return std::abs((new_val - old_val) / new_val);
 }
-}  // namespace kingfisher
+}  // namespace nekrt
 
-#endif  // KINGFISHER_UTILS_NUMERICS_H_
+#endif  // NEKRT_UTILS_NUMERICS_H_

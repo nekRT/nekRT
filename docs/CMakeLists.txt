@@ -47,7 +47,7 @@ add_custom_target(
 )
 
 set(SPHINX_ARGS
-    -D "breathe_projects.kingfisher=${DOCS_BUILD_DIR}/doxygen-xml"
+    -D "breathe_projects.nekrt=${DOCS_BUILD_DIR}/doxygen-xml"
     "${DOCS_SOURCE_DIR}/source"
     "${DOCS_HTML_DIR}"
 )

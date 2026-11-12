@@ -6,7 +6,7 @@ The API reference comes in two forms, both generated from the Doxygen comments i
 - The **pages in this section** present the main classes by topic, alongside the rest of this documentation.
 
 :::{note}
-Kingfisher has no public classes yet, so this section has no pages. Add one per module as the code lands.
+nekRT has no public classes yet, so this section has no pages. Add one per module as the code lands.
 :::
 
 ## Adding an API page
@@ -16,8 +16,8 @@ Create a Markdown file in `docs/source/api/`, add it to a `toctree` on this page
 ````markdown
 # Mesh
 
-```{doxygenclass} kingfisher::Mesh
+```{doxygenclass} nekrt::Mesh
 ```
 ````
 
-Other pages can then link to the class with `` {cpp:class}`kingfisher::Mesh` ``. The [Breathe directive reference](https://breathe.readthedocs.io/en/latest/directives.html) lists the directives for functions, structs, enums, and namespaces.
+Other pages can then link to the class with `` {cpp:class}`nekrt::Mesh` ``. The [Breathe directive reference](https://breathe.readthedocs.io/en/latest/directives.html) lists the directives for functions, structs, enums, and namespaces.

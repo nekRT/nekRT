@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
-#ifndef KINGFISHER_UTILS_ERRORS_H_
-#define KINGFISHER_UTILS_ERRORS_H_
+#ifndef NEKRT_UTILS_ERRORS_H_
+#define NEKRT_UTILS_ERRORS_H_
 
 #include <source_location>
 #include <stdexcept>
@@ -12,11 +12,11 @@
 // NOTE(parallel): an Error thrown on one MPI rank can leave the other ranks
 // waiting in a collective call. Revisit this when MPI is added.
 
-namespace kingfisher {
+namespace nekrt {
 
 /**
- * @brief The exceptions thrown in Kingfisher. Includes commonly-used
- * KingfisherError() and KINGFISHER_ASSERT()
+ * @brief The exceptions thrown in nekRT. Includes commonly-used
+ * NekRTError() and NEKRT_ASSERT()
  *
  */
 class Error : public std::runtime_error {
@@ -38,7 +38,7 @@ class Error : public std::runtime_error {
  * @throws Error If `condition` is true. `what()` is
  *   `<file>:<line>: <message>`.
  */
-void KingfisherError(
+void NekRTError(
     bool condition, std::string_view message,
     std::source_location location = std::source_location::current());
 
@@ -53,21 +53,21 @@ void KingfisherError(
  * @param location The call site, filled in by the compiler.
  * @throws Error Always. `what()` is `<file>:<line>: <message>`.
  */
-[[noreturn]] void KingfisherError(
+[[noreturn]] void NekRTError(
     std::string_view message,
     std::source_location location = std::source_location::current());
 
 namespace detail {
 
-/** Throws the Error for a failed KINGFISHER_ASSERT(). */
+/** Throws the Error for a failed NEKRT_ASSERT(). */
 [[noreturn]] void AssertFailed(const char* condition, std::string_view message,
                                const char* file, int line);
 
 }  // namespace detail
-}  // namespace kingfisher
+}  // namespace nekrt
 
 /**
- * @def KINGFISHER_ASSERT(condition, message)
+ * @def NEKRT_ASSERT(condition, message)
  * Throws an Error if `condition` is false.
  *
  * Use this for internal invariants (programmer mistakes), not for user input.
@@ -75,19 +75,19 @@ namespace detail {
  * `condition` and `message` are not evaluated.
  */
 #ifndef NDEBUG
-#define KINGFISHER_ASSERT(condition, message)                             \
-  do {                                                                    \
-    if (!(condition)) {                                                   \
-      ::kingfisher::detail::AssertFailed(#condition, (message), __FILE__, \
-                                         __LINE__);                       \
-    }                                                                     \
+#define NEKRT_ASSERT(condition, message)                             \
+  do {                                                               \
+    if (!(condition)) {                                              \
+      ::nekrt::detail::AssertFailed(#condition, (message), __FILE__, \
+                                    __LINE__);                       \
+    }                                                                \
   } while (false)
 #else
-#define KINGFISHER_ASSERT(condition, message) \
-  do {                                        \
-    (void)sizeof(condition);                  \
-    (void)sizeof(message);                    \
+#define NEKRT_ASSERT(condition, message) \
+  do {                                   \
+    (void)sizeof(condition);             \
+    (void)sizeof(message);               \
   } while (false)
 #endif
 
-#endif  // KINGFISHER_UTILS_ERRORS_H_
+#endif  // NEKRT_UTILS_ERRORS_H_

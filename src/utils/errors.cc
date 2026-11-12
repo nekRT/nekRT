@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
 #include "utils/errors.h"
 
 #include <string>
 #include <string_view>
 
-namespace kingfisher {
+namespace nekrt {
 
-void KingfisherError(bool condition, std::string_view message,
-                     std::source_location location) {
+void NekRTError(bool condition, std::string_view message,
+                std::source_location location) {
   if (condition) {
     throw Error(std::string(location.file_name()) + ":" +
                 std::to_string(location.line()) + ": " + std::string(message));
   }
 }
 
-void KingfisherError(std::string_view message, std::source_location location) {
+void NekRTError(std::string_view message, std::source_location location) {
   throw Error(std::string(location.file_name()) + ":" +
               std::to_string(location.line()) + ": " + std::string(message));
 }
@@ -30,4 +30,4 @@ void AssertFailed(const char* condition, std::string_view message,
 }
 
 }  // namespace detail
-}  // namespace kingfisher
+}  // namespace nekrt

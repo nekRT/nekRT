@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2026, Liam Pohlmann
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
 #include "utils/legendre_polynomials.h"
 
@@ -11,7 +11,7 @@
 #include "utils/errors.h"
 #include "utils/numerics.h"
 
-namespace kingfisher {
+namespace nekrt {
 
 // Representative x values in the open interval, plus endpoints.
 const mfem::Vector kInteriorX{
@@ -501,7 +501,7 @@ TEST(ApproximateLegendreRoot, AcceptsValidRootNumbers) {
   }
 }
 
-// KINGFISHER_ASSERT is compiled out when NDEBUG is defined.
+// NEKRT_ASSERT is compiled out when NDEBUG is defined.
 #ifndef NDEBUG
 TEST(ApproximateLegendreRoot, ThrowsForRootNumberAtOrAboveOrder) {
   EXPECT_THROW(ApproximateLegendreRoot(4, 4), Error);
@@ -692,4 +692,4 @@ TEST(NewtonStress, ExtremeRootMatchesAsymptotics) {
     EXPECT_NEAR((1.0 - root) / expected_gap, 1.0, 1e-2) << "n=" << n;
   }
 }
-}  // namespace kingfisher
+}  // namespace nekrt

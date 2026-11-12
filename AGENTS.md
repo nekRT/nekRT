@@ -1,8 +1,8 @@
-# Kingfisher AI Coding Agent Instructions
+# nekRT AI Coding Agent Instructions
 
 ## Project Overview
 
-Kingfisher is a deterministic spectral element radiation transport code built on
+nekRT is a deterministic spectral element radiation transport code built on
 [MFEM](https://github.com/mfem/mfem). It is written in C++20.
 
 - **C++ sources** are in `src/`, public headers in `include/`, and GoogleTest
@@ -67,8 +67,8 @@ The full style guide is `docs/source/developer-guide/style.md`. In short:
 | Constants (`constexpr`, including local) | `kPascalCase` | `kMaxOrder` |
 | Enumerators (`enum class` only) | `PascalCase` | `BoundaryCondition::Vacuum` |
 | Local non-`constexpr` `const` variables | `snake_case` | `num_dofs` |
-| Namespaces | `snake_case` | `kingfisher` |
-| Macros | `KINGFISHER_UPPER_CASE` | `KINGFISHER_USE_MPI` |
+| Namespaces | `snake_case` | `nekrt` |
+| Macros | `NEKRT_UPPER_CASE` | `NEKRT_USE_MPI` |
 | Files | `snake_case.cc`, `.h` | `sweep_operator.cc` |
 
 - Formatting is `.clang-format` (Google base style), checked in CI with
@@ -80,15 +80,15 @@ The full style guide is `docs/source/developer-guide/style.md`. In short:
 - One subdirectory per subsystem (`angular/`, `spatial/`, `transport/`, ...),
   used the same way in `include/`, `src/`, and `tests/`. A subsystem's
   data structs live next to the free functions that work on them.
-- All code is in the single namespace `kingfisher`. Subdirectories are not
+- All code is in the single namespace `nekrt`. Subdirectories are not
   mirrored by sub-namespaces. File-local helpers go in an anonymous namespace.
-- Header guards are `KINGFISHER_<PATH>_<FILE>_H_`, where `<PATH>` is the path
-  under `include/`, for example `KINGFISHER_ANGULAR_QUADRATURE_H_`.
+- Header guards are `NEKRT_<PATH>_<FILE>_H_`, where `<PATH>` is the path
+  under `include/`, for example `NEKRT_QUADRATURE_QUADRATURE_H_`.
 - Public APIs have Doxygen comments.
 
 ### Data-oriented design
 
-Kingfisher's hot loops (angular sweeps, element assembly, source and group
+nekRT's hot loops (angular sweeps, element assembly, source and group
 iterations) touch large amounts of data per step, so the data layout matters
 more than the class hierarchy:
 
@@ -117,5 +117,5 @@ string formatting.
 ## Code Review
 
 When reviewing code changes in this repository, use the
-`reviewing-kingfisher-code` skill in
-`.claude/skills/reviewing-kingfisher-code/SKILL.md`.
+`reviewing-nekrt-code` skill in
+`.claude/skills/reviewing-nekrt-code/SKILL.md`.

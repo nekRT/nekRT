@@ -1,4 +1,4 @@
-# clang-tidy configuration for Kingfisher. CI runs clang-tidy 18 on the changed
+# clang-tidy configuration for nekRT. CI runs clang-tidy 18 on the changed
 # files of every pull request (.github/workflows/format-check.yml).
 #
 # readability-identifier-naming enforces the naming table in
@@ -17,7 +17,7 @@ Checks: >
   -performance-enum-size,
   readability-identifier-naming
 WarningsAsErrors: ''
-# Only report problems in Kingfisher's own headers. Dependency headers are
+# Only report problems in nekRT's own headers. Dependency headers are
 # skipped because cmake/Dependencies.cmake adds every package with SYSTEM YES
 # (clang-tidy ignores system headers); this regex alone would also match them.
 HeaderFilterRegex: '.*/(src|include|tests)/.*'
@@ -78,6 +78,6 @@ CheckOptions:
   # Namespaces and macros
   - { key: readability-identifier-naming.NamespaceCase, value: lower_case }
   - { key: readability-identifier-naming.MacroDefinitionCase, value: UPPER_CASE }
-  # Google style header guards end in an underscore (KINGFISHER_UTILS_ERRORS_H_).
-  - { key: readability-identifier-naming.MacroDefinitionIgnoredRegexp, value: '^KINGFISHER_[A-Z0-9_]+_H_$' }
+  # Google style header guards end in an underscore (NEKRT_UTILS_ERRORS_H_).
+  - { key: readability-identifier-naming.MacroDefinitionIgnoredRegexp, value: '^NEKRT_[A-Z0-9_]+_H_$' }
 ...

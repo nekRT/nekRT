@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
-#ifndef KINGFISHER_QUADRATURE_QUAD_SET_PARAMS_H_
-#define KINGFISHER_QUADRATURE_QUAD_SET_PARAMS_H_
+#ifndef NEKRT_QUADRATURE_QUAD_SET_PARAMS_H_
+#define NEKRT_QUADRATURE_QUAD_SET_PARAMS_H_
 
 #include <cstddef>
 
 #include "utils/enums.h"
 
-namespace kingfisher {
+namespace nekrt {
 /**
  * @brief Parameters of a one-dimensional quadrature set.
  *
@@ -28,6 +28,6 @@ struct QuadSetParams {
   /// set's role, not read from the input file.
   double max = 0.0;
 };
-}  // namespace kingfisher
+}  // namespace nekrt
 
-#endif  // KINGFISHER_QUADRATURE_QUAD_SET_PARAMS_H_
+#endif  // NEKRT_QUADRATURE_QUAD_SET_PARAMS_H_

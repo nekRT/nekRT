@@ -1,6 +1,6 @@
 ---
-name: reviewing-kingfisher-code
-description: Reviews code changes in the Kingfisher codebase against its contribution criteria (correctness and numerics, data-oriented design, testing, Google C++ style, PEP 8, design, performance, docs, dependencies). Use when asked to review a PR, branch, patch, or set of code changes in Kingfisher.
+name: reviewing-nekrt-code
+description: Reviews code changes in the nekRT codebase against its contribution criteria (correctness and numerics, data-oriented design, testing, Google C++ style, PEP 8, design, performance, docs, dependencies). Use when asked to review a PR, branch, patch, or set of code changes in nekRT.
 ---
 
 Apply the repository-wide guidance in `AGENTS.md` (project overview, build and
@@ -20,7 +20,7 @@ test workflow, and conventions). The full style guide is
 
 2. **Identify what to review.**
    - **PR review:** `gh pr diff <number>`, or `git diff <baseRefName>...HEAD`.
-   - **No PR context:** `git diff main...HEAD`. Kingfisher's integration
+   - **No PR context:** `git diff main...HEAD`. nekRT's integration
      branch is `main`.
    - **User gives an explicit base or commit range:** use that.
 
@@ -55,7 +55,7 @@ doesn't apply (for example Python in a C++-only PR), say "N/A".
   regions, vacuum/reflective boundaries, degenerate elements, empty inputs)?
 
 ### Data-Oriented Design
-This is a priority for Kingfisher. Flag designs that will be slow to iterate
+This is a priority for nekRT. Flag designs that will be slow to iterate
 over, even if they are clean from an object-oriented point of view.
 
 - **Layout:** Is hot data stored as structure of arrays in contiguous buffers
@@ -106,17 +106,17 @@ Every change in behavior must be tested. Missing tests for new behavior is a
     `snake_case` for struct data members.
   - `kPascalCase` for constants (every `constexpr`, local ones included); only
     local non-`constexpr` `const` variables are `snake_case`.
-  - `enum class` only; flag any plain `enum` declared in Kingfisher, since
+  - `enum class` only; flag any plain `enum` declared in nekRT, since
     clang-tidy 18 can't check this. Enumerators are `PascalCase` with no `k`
     (`BoundaryCondition::Vacuum`).
-  - `snake_case` for namespaces; `KINGFISHER_UPPER_CASE` for macros.
+  - `snake_case` for namespaces; `NEKRT_UPPER_CASE` for macros.
   - `snake_case.cc` / `snake_case.h` file names; tests are `*_test.cc`.
-- Header guards are `KINGFISHER_<PATH>_<FILE>_H_`, with `<PATH>` the path under
-  `include/kingfisher/` (`KINGFISHER_ANGULAR_QUADRATURE_H_`).
-- Files go in a per-subsystem subdirectory, the same in `include/kingfisher/`,
+- Header guards are `NEKRT_<PATH>_<FILE>_H_`, with `<PATH>` the path under
+  `include/` (`NEKRT_QUADRATURE_QUADRATURE_H_`).
+- Files go in a per-subsystem subdirectory, the same in `include/`,
   `src/`, and `tests/`. Flag `data/` vs `kernels/` splits and `utils/` dumping
   grounds.
-- All code is in namespace `kingfisher`; flag sub-namespaces that just mirror a
+- All code is in namespace `nekrt`; flag sub-namespaces that just mirror a
   directory. File-local helpers belong in an anonymous namespace.
 - Is the code clang-format clean (`.clang-format`, Google base style)? Are
   `NOLINT` comments limited to one check and justified?
@@ -126,7 +126,7 @@ Every change in behavior must be tested. Missing tests for new behavior is a
   consistent with the rest of the codebase?
 
 ### Python Style
-Kingfisher will add a Python API for generating YAML input files. When a PR
+nekRT will add a Python API for generating YAML input files. When a PR
 contains Python:
 - Does it conform to PEP 8?
 - Are there numpydoc docstrings and type hints on public functions and classes?
@@ -137,7 +137,7 @@ contains Python:
 
 ### Design
 - Is the design as simple as it could be while still meeting the requirements?
-- Is there an existing facility in MFEM or in Kingfisher that does the same
+- Is there an existing facility in MFEM or in nekRT that does the same
   thing and should be used instead?
 - Are there alternative designs that would be simpler or fit the data-oriented
   approach better?

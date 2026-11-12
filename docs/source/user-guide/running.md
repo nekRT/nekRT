@@ -1,4 +1,4 @@
-# Running Kingfisher
+# Running nekRT
 
 Command-line usage, serial and parallel execution, and solver settings.
 

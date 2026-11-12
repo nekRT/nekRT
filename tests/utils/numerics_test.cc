@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2026, Liam Pohlmann
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
 #include "utils/numerics.h"
 
@@ -10,7 +10,7 @@
 
 #include "../tests/constants.h"
 
-namespace kingfisher {
+namespace nekrt {
 TEST(UtilsNumerics, DoubleEqual) {
   EXPECT_TRUE(DoubleEqual(1.0, 1.0));
   EXPECT_TRUE(DoubleEqual(1.0, 1.0 + kTolerance / 2.0));
@@ -55,4 +55,4 @@ TEST(UtilsNumerics, ToleranceConstants) {
   EXPECT_EQ(kExpNearTolerance, 1e-14);
   EXPECT_LT(kTolerance, kExpNearTolerance);
 }
-}  // namespace kingfisher
+}  // namespace nekrt

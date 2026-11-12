@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
 #include "quadrature/trapezoid.h"
 
@@ -14,7 +14,7 @@
 #include "utils/errors.h"
 #include "utils/numerics.h"
 
-namespace kingfisher {
+namespace nekrt {
 
 // =======================================================================
 // Properties that must hold for every number of points (n >= 2) on the
@@ -199,7 +199,7 @@ TEST(Trapezoid, LinearFunctionOnAsymmetricInterval) {
 // Invalid input
 // =======================================================================
 
-// KINGFISHER_ASSERT is compiled out when NDEBUG is defined.
+// NEKRT_ASSERT is compiled out when NDEBUG is defined.
 #ifndef NDEBUG
 TEST(Trapezoid, FewerThanTwoPointsThrows) {
   QuadSet1D quad_set;
@@ -236,4 +236,4 @@ TEST(Trapezoid, ExponentialIntegralConvergesSecondOrder) {
   }
 }
 
-}  // namespace kingfisher
+}  // namespace nekrt

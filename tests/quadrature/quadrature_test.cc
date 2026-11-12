@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
 #include "quadrature/quadrature.h"
 
@@ -23,7 +23,7 @@
 #include "utils/input_parameters.h"
 #include "utils/numerics.h"
 
-namespace kingfisher {
+namespace nekrt {
 
 // =======================================================================
 // Integrate
@@ -46,7 +46,7 @@ TEST(Integrate, IntegratesQuadraticWithTwoPointGaussLegendre) {
       2.0 / 3.0, kExpNearTolerance);
 }
 
-// KINGFISHER_ASSERT is compiled out when NDEBUG is defined.
+// NEKRT_ASSERT is compiled out when NDEBUG is defined.
 #ifndef NDEBUG
 TEST(Integrate, MismatchedSizesThrow) {
   const mfem::Vector three{1.0, 2.0, 3.0};
@@ -209,7 +209,7 @@ QuadTypeTraits TraitsFor(const QuadSetType type) {
               [](int n) { return n - 2; },
               [](int n, double a, double b) { return Trapezoid(n, a, b); }};
   }
-  KingfisherError("Unknown QuadSetType passed to TraitsFor.");
+  NekRTError("Unknown QuadSetType passed to TraitsFor.");
 }
 #if defined(__GNUC__) || defined(__clang__)
 #pragma GCC diagnostic pop
@@ -337,7 +337,7 @@ TEST_P(Create1DQuadSetTest, HandlesAnIntervalOtherThanTheUnitInterval) {
   }
 }
 
-// The point-count checks live in the rules and are KINGFISHER_ASSERTs, so they
+// The point-count checks live in the rules and are NEKRT_ASSERTs, so they
 // are compiled out under NDEBUG. Create1DQuadSet narrows n_points (size_t) to
 // int, so a count that does not fit must not slip through as a valid one.
 #ifndef NDEBUG
@@ -703,4 +703,4 @@ TEST(SphericalQuadSet, AzimuthalSetNotOnZeroToTwoPiThrows) {
   EXPECT_THROW(SphericalQuadSet(params), Error);
 }
 
-}  // namespace kingfisher
+}  // namespace nekrt

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
 #include <fmt/core.h>
 
@@ -18,10 +18,10 @@ int main(int argc, char** argv) {
   const std::string input_filename = argv[1];
   try {
     fmt::print("Loading {} input file...\n", input_filename);
-    const kingfisher::InputParameters input_params =
-        kingfisher::ReadInputFile(input_filename);
+    const nekrt::InputParameters input_params =
+        nekrt::ReadInputFile(input_filename);
     fmt::print("Done. Problem: {}\n", input_params.problem_params.name);
-  } catch (const kingfisher::Error& e) {
+  } catch (const nekrt::Error& e) {
     std::cerr << "Error: " << e.what() << '\n';
     return 1;
   }

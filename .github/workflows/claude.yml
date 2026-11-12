@@ -2,7 +2,7 @@ name: Claude Code
 
 # Runs Claude when someone with write access mentions @claude in an issue, a PR
 # comment, or a PR review, for example "@claude review" to re-run the review
-# after new commits. CLAUDE.md points it to the reviewing-kingfisher-code skill.
+# after new commits. CLAUDE.md points it to the reviewing-nekrt-code skill.
 
 on:
   issue_comment:

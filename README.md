@@ -1,15 +1,15 @@
-[![License](https://img.shields.io/github/license/kingfisher-project/kingfisher)](https://github.com/kingfisher-project/kingfisher/blob/main/LICENSE)
-[![Docs](https://github.com/kingfisher-project/kingfisher/actions/workflows/docs.yml/badge.svg)](https://github.com/kingfisher-project/kingfisher/actions/workflows/docs.yml)
-[![C++ Format and Lint](https://github.com/kingfisher-project/kingfisher/actions/workflows/format-check.yml/badge.svg)](https://github.com/kingfisher-project/kingfisher/actions/workflows/format-check.yml)
-[![Build and Test](https://github.com/kingfisher-project/kingfisher/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/kingfisher-project/kingfisher/actions/workflows/build_and_test.yml)
+[![License](https://img.shields.io/github/license/nekRT/nekRT)](https://github.com/nekRT/nekRT/blob/main/LICENSE)
+[![Docs](https://github.com/nekRT/nekRT/actions/workflows/docs.yml/badge.svg)](https://github.com/nekRT/nekRT/actions/workflows/docs.yml)
+[![C++ Format and Lint](https://github.com/nekRT/nekRT/actions/workflows/format-check.yml/badge.svg)](https://github.com/nekRT/nekRT/actions/workflows/format-check.yml)
+[![Build and Test](https://github.com/nekRT/nekRT/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/nekRT/nekRT/actions/workflows/build_and_test.yml)
 
 
-# Kingfisher: Spectral Element Radiation Transport Code
-Kingfisher is a deterministic spectral element radiation transport code built on [mfem](https://github.com/mfem/mfem/).
+# nekRT: Spectral Element Radiation Transport Code
+nekRT is a deterministic spectral element radiation transport code built on [mfem](https://github.com/mfem/mfem/).
 This project is currently being developed by Liam Pohlmann at the University of Illinois Urbana-Champaign.
 
 ## Documentation
-The documentation is at <https://kingfisher-project.github.io/kingfisher/>.
+The documentation is at <https://nekrt.github.io/nekRT/>.
 
 To build it locally, you need a C++ compiler plus the following packages:
 
@@ -33,15 +33,15 @@ All of them are in the conda environment `docs/environment.yml`. The Python pack
 
 ```
 conda env create -f docs/environment.yml
-conda activate kingfisher-docs
+conda activate nekrt-docs
 cmake --workflow --preset docs
 ```
 
 and open `build/docs/docs/html/index.html`.
 
 ## Installation
-See the documentation's [Getting Started](https://kingfisher-project.github.io/kingfisher/getting-started/index.html) page.
+See the documentation's [Getting Started](https://nekrt.github.io/nekRT/getting-started/index.html) page.
 
 ## License
-Kingfisher is distributed under the BSD-3-Clause license.
+nekRT is distributed under the BSD-3-Clause license.
 

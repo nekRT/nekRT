@@ -1,10 +1,10 @@
 # Conda environment with everything needed to build the documentation:
 #   conda env create -f docs/environment.yml
-#   conda activate kingfisher-docs
+#   conda activate nekrt-docs
 #   cmake --workflow --preset docs
 #
 # Keep the Python package versions in step with docs/requirements.txt.
-name: kingfisher-docs
+name: nekrt-docs
 channels:
   - conda-forge
 dependencies:

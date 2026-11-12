@@ -22,7 +22,7 @@
       "inherits": "base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
-        "KINGFISHER_BUILD_TESTS": "ON"
+        "NEKRT_BUILD_TESTS": "ON"
       }
     },
     {
@@ -32,17 +32,17 @@
       "inherits": "base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-        "KINGFISHER_BUILD_TESTS": "ON"
+        "NEKRT_BUILD_TESTS": "ON"
       }
     },
     {
       "name": "release",
       "displayName": "Release",
-      "description": "Serial fully optimized build of the kingfisher executable, without tests. For MPI, see NOTE(parallel) in cmake/Dependencies.cmake.",
+      "description": "Serial fully optimized build of the nekrt executable, without tests. For MPI, see NOTE(parallel) in cmake/Dependencies.cmake.",
       "inherits": "base",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "KINGFISHER_BUILD_TESTS": "OFF"
+        "NEKRT_BUILD_TESTS": "OFF"
       }
     },
     {
@@ -51,8 +51,8 @@
       "description": "Doxygen and Sphinx documentation only. Needs the tools in docs/requirements.txt plus doxygen and graphviz.",
       "inherits": "base",
       "cacheVariables": {
-        "KINGFISHER_BUILD_DOCS": "ON",
-        "KINGFISHER_BUILD_TESTS": "OFF"
+        "NEKRT_BUILD_DOCS": "ON",
+        "NEKRT_BUILD_TESTS": "OFF"
       }
     }
   ],
@@ -72,7 +72,7 @@
       "displayName": "Release",
       "configurePreset": "release",
       "targets": [
-        "kingfisher"
+        "nekrt"
       ]
     },
     {
@@ -132,7 +132,7 @@
     {
       "name": "release",
       "displayName": "Release",
-      "description": "Configure and build the optimized kingfisher executable.",
+      "description": "Configure and build the optimized nekrt executable.",
       "steps": [
         { "type": "configure", "name": "release" },
         { "type": "build", "name": "release" }

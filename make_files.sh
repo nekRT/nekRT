@@ -13,7 +13,7 @@ fi
 NAME="$1"
 
 # Convert filename to a header guard
-GUARD=$(printf "KINGFISHER_%s_H_" "$NAME" \
+GUARD=$(printf "NEKRT_%s_H_" "$NAME" \
     | tr '/[:lower:]-' '_[:upper:]_')
 
 mkdir -p \
@@ -23,12 +23,12 @@ mkdir -p \
 
 cat > "include/${NAME}.h" <<EOF
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
 #ifndef ${GUARD}
 #define ${GUARD}
 
-namespace kingfisher {
+namespace nekrt {
 
 }
 
@@ -37,11 +37,11 @@ EOF
 
 cat > "src/${NAME}.cc" <<EOF
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
 #include "${NAME}.h"
 
-namespace kingfisher {
+namespace nekrt {
 
 }
 

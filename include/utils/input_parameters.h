@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
-#ifndef KINGFISHER_UTILS_INPUT_PARAMETERS_H_
-#define KINGFISHER_UTILS_INPUT_PARAMETERS_H_
+#ifndef NEKRT_UTILS_INPUT_PARAMETERS_H_
+#define NEKRT_UTILS_INPUT_PARAMETERS_H_
 
 #include <cstddef>
 #include <string>
@@ -12,7 +12,7 @@
 #include "quadrature/quadrature.h"
 #include "utils/enums.h"
 
-namespace kingfisher {
+namespace nekrt {
 
 /**
  * @brief `problem` block parameters.
@@ -279,6 +279,6 @@ void CheckSpatialParams(const SpatialParams& spatial_params);
  */
 void CheckSolverParams(const SolverParams& solver_params);
 
-}  // namespace kingfisher
+}  // namespace nekrt
 
-#endif  // KINGFISHER_UTILS_INPUT_PARAMETERS_H_
+#endif  // NEKRT_UTILS_INPUT_PARAMETERS_H_

@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
-#ifndef KINGFISHER_TESTS_QUADRATURE_HELPERS_H_
-#define KINGFISHER_TESTS_QUADRATURE_HELPERS_H_
+#ifndef NEKRT_TESTS_QUADRATURE_HELPERS_H_
+#define NEKRT_TESTS_QUADRATURE_HELPERS_H_
 
 #include <functional>
 #include <mfem.hpp>
 
 #include "quadrature/quadrature.h"
 
-namespace kingfisher {
+namespace nekrt {
 
 /// @brief Exact value of \f$\int_{-1}^{1} x^k dx\f$.
 inline double AnalyticMonomialIntegral(const int k) {
@@ -30,6 +30,6 @@ inline double IntegrateFunction(const std::function<double(double)>& f,
   return Integrate(Evaluate(f, quad_set.nodes), quad_set.weights);
 }
 
-}  // namespace kingfisher
+}  // namespace nekrt
 
-#endif  // KINGFISHER_TESTS_QUADRATURE_HELPERS_H_
+#endif  // NEKRT_TESTS_QUADRATURE_HELPERS_H_

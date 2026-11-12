@@ -1,4 +1,4 @@
-# Doxygen configuration template for Kingfisher.
+# Doxygen configuration template for nekRT.
 #
 # docs/CMakeLists.txt fills in the @-delimited variables and writes the
 # result to the build directory as Doxyfile. Only settings that differ from
@@ -8,11 +8,9 @@
 #   html/doxygen  full HTML reference, published at <site>/doxygen/
 #   doxygen-xml   XML read by Breathe for the Sphinx "C++ API" pages
 
-PROJECT_NAME           = Kingfisher
+PROJECT_NAME           = nekRT
 PROJECT_BRIEF          = "Spectral element radiation transport"
 PROJECT_NUMBER         = @PROJECT_VERSION@
-PROJECT_LOGO           = @DOCS_SOURCE_DIR@/logo/logo_kingfisher.svg
-PROJECT_ICON           = @DOCS_SOURCE_DIR@/logo/logo_kingfisher.svg
 OUTPUT_DIRECTORY       = @DOCS_BUILD_DIR@
 STRIP_FROM_PATH        = @PROJECT_SOURCE_DIR@
 

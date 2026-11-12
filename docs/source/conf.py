@@ -1,4 +1,4 @@
-"""Sphinx configuration for the Kingfisher documentation."""
+"""Sphinx configuration for the nekRT documentation."""
 
 import re
 import sys
@@ -18,7 +18,7 @@ _cmakelists = (REPO_DIR / "CMakeLists.txt").read_text()
 _version = re.search(
     r"project\s*\([^)]*\bVERSION\s+([0-9][0-9.]*)", _cmakelists)
 
-project = "Kingfisher"
+project = "nekRT"
 author = "Liam Pohlmann"
 copyright = f"{date.today().year}, {author}"
 release = _version.group(1)
@@ -77,15 +77,15 @@ mathjax3_config = {
 # The JSON Schema that the {schema-block} directive (docs/source/_ext/schema_doc.py)
 # builds the input file tables from.
 schema_path = str(REPO_DIR / "python" / "src" /
-                  "kingfisher" / "schemas" / "input-v0.schema.json")
+                  "nekrt" / "schemas" / "input-v0.schema.json")
 
 # -- Breathe (C++ API from Doxygen XML) --------------------------------------
 
 # Written by the docs-doxygen CMake target; see docs/CMakeLists.txt, which
 # passes the real path with -D. The default matches the "docs" preset.
-breathe_projects = {"kingfisher": str(
+breathe_projects = {"nekrt": str(
     REPO_DIR / "build" / "docs" / "docs" / "doxygen-xml")}
-breathe_default_project = "kingfisher"
+breathe_default_project = "nekrt"
 breathe_default_members = ("members", "undoc-members")
 
 # -- Bibliography ------------------------------------------------------------
@@ -96,14 +96,12 @@ bibtex_default_style = "unsrt"
 # -- HTML output -------------------------------------------------------------
 
 html_theme = "furo"
-html_title = f"Kingfisher {release} documentation"
-html_logo = "../logo/logo_kingfisher.svg"
-html_favicon = "../logo/logo_kingfisher.svg"
+html_title = f"nekRT {release} documentation"
 html_static_path = ["_static"]
-html_css_files = ["css/kingfisher.css"]
+html_css_files = ["css/nekrt.css"]
 html_show_sphinx = False
 
-# Palette taken from docs/logo/logo_kingfisher.svg. Furo follows the reader's
+# The site palette (teal, navy, orange). Furo follows the reader's
 # system light/dark setting and offers a toggle; these are its two palettes.
 # docs/doxygen/customization.css uses the same colors for the Doxygen pages.
 _TEAL = "#005D82"
@@ -124,9 +122,9 @@ html_theme_options = {
         "color-link--hover": _ORANGE,
         "color-link-underline--hover": _ORANGE,
         "color-inline-code-background": "#F4F8FA",
-        "kf-heading": _NAVY,
-        "kf-accent": _ORANGE,
-        "kf-table-head": _NAVY,
+        "nekrt-heading": _NAVY,
+        "nekrt-accent": _ORANGE,
+        "nekrt-table-head": _NAVY,
     },
     "dark_css_variables": {
         "color-brand-primary": "#5BB8DA",
@@ -141,12 +139,12 @@ html_theme_options = {
         "color-link--hover": "#F0703A",
         "color-link-underline--hover": "#F0703A",
         "color-inline-code-background": "#022633",
-        "kf-heading": "#E8EEF0",
-        "kf-accent": "#F0703A",
-        "kf-table-head": _NAVY,
+        "nekrt-heading": "#E8EEF0",
+        "nekrt-accent": "#F0703A",
+        "nekrt-table-head": _NAVY,
     },
     # "Edit this page" link on every page.
-    "source_repository": "https://github.com/kingfisher-project/kingfisher/",
+    "source_repository": "https://github.com/nekRT/nekRT/",
     "source_branch": "main",
     "source_directory": "docs/source/",
 }
