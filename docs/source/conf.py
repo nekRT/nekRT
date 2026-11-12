@@ -97,7 +97,7 @@ bibtex_default_style = "unsrt"
 
 html_theme = "furo"
 html_title = f"nekRT {release} documentation"
-html_static_path = ["_static"]
+html_static_path = ["_static", "logo"]
 html_css_files = ["css/nekrt.css"]
 html_show_sphinx = False
 
@@ -109,6 +109,9 @@ _NAVY = "#04364A"
 _ORANGE = "#D34305"
 
 html_theme_options = {
+    "light_logo": "logo_white_circle.svg",
+    "dark_logo": "logo_dark_circle.svg",
+
     "light_css_variables": {
         "color-brand-primary": _TEAL,
         "color-brand-content": _TEAL,

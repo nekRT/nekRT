@@ -5,6 +5,20 @@
  * for light and dark mode in html_theme_options in docs/source/conf.py.
  */
 
+.sidebar-logo-container {
+  --kf-disc-size: 170px;
+  --kf-logo-scale: 0.9;
+  width: var(--kf-disc-size);
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sidebar-logo {
+  width: calc(var(--kf-logo-scale) * 100%);
+  margin: 0;
+}
+
 /* -- Sidebar brand ------------------------------------------------------- */
 
 .sidebar-brand-text {
