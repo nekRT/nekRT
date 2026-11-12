@@ -336,7 +336,7 @@ def main():
     a = p.parse_args()
 
     base = Config(cmap=a.cmap, show_axes=a.axes, transparent=a.transparent,
-                  show_orbits=not a.no_orbits)
+                  show_orbits= a.no_orbits)
     # Two looks: white background with the dark curve, and the colormap's own dark
     # end as background with the curve and nodes flipped to the light end.
     looks = {
