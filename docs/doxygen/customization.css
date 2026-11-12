@@ -2,24 +2,25 @@
  * nekRT customization for Doxygen Awesome.
  *
  * Loaded after doxygen-awesome.css and built on its CSS variables. The
- * palette matches docs/source/_static/css/nekrt.css:
+ * palette is sampled from matplotlib's magma, as in the logo
+ * (docs/source/logo/nekrt_logo.py), and matches docs/source/conf.py:
  *
- *   teal    #005D82
- *   navy    #04364A
- *   orange  #D34305
+ *   magma(0.00) #000004   magma(0.15) #251255   magma(0.20) #3B0F70
+ *   magma(0.30) #641A80   magma(0.55) #CA3E72   magma(0.70) #F7705C
+ *   magma(0.75) #FC8961   magma(0.92) #FED89A
  */
 
 /* -- Light mode ----------------------------------------------------------- */
 
 html {
-  --primary-color: #005D82;
-  --primary-dark-color: #04364A;
-  --primary-light-color: #3D8FAE;
+  --primary-color: #641A80;
+  --primary-dark-color: #251255;
+  --primary-light-color: #8C2981;
 
   --page-background-color: #FFFFFF;
-  --page-foreground-color: #252525;
-  --page-secondary-foreground-color: #5F6B70;
-  --separator-color: #D5DDE0;
+  --page-foreground-color: #1B1424;
+  --page-secondary-foreground-color: #5E5670;
+  --separator-color: #DDD6E6;
 
   /* Room for long signatures and template parameters. */
   --content-maxwidth: 1150px;
@@ -28,24 +29,24 @@ html {
   --border-radius-medium: 6px;
   --border-radius-large: 8px;
 
-  --fragment-background: #F4F8FA;
-  --fragment-foreground: #252525;
-  --code-background: #F4F8FA;
-  --code-foreground: #04364A;
+  --fragment-background: #F7F4FA;
+  --fragment-foreground: #1B1424;
+  --code-background: #F7F4FA;
+  --code-foreground: #251255;
 
-  --tablehead-background: #04364A;
+  --tablehead-background: #3B0F70;
   --tablehead-foreground: #FFFFFF;
 
-  --side-nav-background: #F4F8FA;
-  --side-nav-foreground: #252525;
-  --searchbar-background: #F4F8FA;
+  --side-nav-background: #F7F4FA;
+  --side-nav-foreground: #1B1424;
+  --searchbar-background: #F7F4FA;
 
-  --blockquote-background: #E6F0F4;
-  --blockquote-foreground: #252525;
+  --blockquote-background: #ECE6F3;
+  --blockquote-foreground: #1B1424;
 
-  --warning-color: #D34305;
-  --warning-color-dark: #A93604;
-  --warning-color-darker: #7F2803;
+  --warning-color: #CA3E72;
+  --warning-color-dark: #A8325F;
+  --warning-color-darker: #84264C;
 
   --top-height: 60px;
 }
@@ -59,72 +60,72 @@ html {
   html:not(.light-mode) {
     color-scheme: dark;
 
-    --primary-color: #5BB8DA;
-    --primary-dark-color: #8FD0E8;
-    --primary-light-color: #005D82;
+    --primary-color: #FC8961;
+    --primary-dark-color: #FED89A;
+    --primary-light-color: #8C2981;
 
-    --page-background-color: #0B1A21;
-    --page-foreground-color: #E8EEF0;
-    --page-secondary-foreground-color: #A9B8BE;
-    --separator-color: #23404C;
+    --page-background-color: #07050F;
+    --page-foreground-color: #EFE9F5;
+    --page-secondary-foreground-color: #B3A9C4;
+    --separator-color: #2B2142;
 
-    --fragment-background: #022633;
-    --fragment-foreground: #E8EEF0;
-    --code-background: #022633;
-    --code-foreground: #E8EEF0;
+    --fragment-background: #140E36;
+    --fragment-foreground: #EFE9F5;
+    --code-background: #140E36;
+    --code-foreground: #EFE9F5;
 
-    --tablehead-background: #04364A;
+    --tablehead-background: #3B0F70;
     --tablehead-foreground: #FFFFFF;
 
-    --side-nav-background: #04364A;
-    --side-nav-foreground: #E8EEF0;
-    --searchbar-background: #04364A;
+    --side-nav-background: #000004;
+    --side-nav-foreground: #EFE9F5;
+    --searchbar-background: #140E36;
 
-    --blockquote-background: #0F2A35;
-    --blockquote-foreground: #E8EEF0;
+    --blockquote-background: #1A1230;
+    --blockquote-foreground: #EFE9F5;
 
-    --warning-color: #F0703A;
-    --warning-color-dark: #D34305;
-    --warning-color-darker: #A93604;
+    --warning-color: #F7705C;
+    --warning-color-dark: #CA3E72;
+    --warning-color-darker: #A8325F;
   }
 }
 
 html.dark-mode {
   color-scheme: dark;
 
-  --primary-color: #5BB8DA;
-  --primary-dark-color: #8FD0E8;
-  --primary-light-color: #005D82;
+  --primary-color: #FC8961;
+  --primary-dark-color: #FED89A;
+  --primary-light-color: #8C2981;
 
-  --page-background-color: #0B1A21;
-  --page-foreground-color: #E8EEF0;
-  --page-secondary-foreground-color: #A9B8BE;
-  --separator-color: #23404C;
+  --page-background-color: #07050F;
+  --page-foreground-color: #EFE9F5;
+  --page-secondary-foreground-color: #B3A9C4;
+  --separator-color: #2B2142;
 
-  --fragment-background: #022633;
-  --fragment-foreground: #E8EEF0;
-  --code-background: #022633;
-  --code-foreground: #E8EEF0;
+  --fragment-background: #140E36;
+  --fragment-foreground: #EFE9F5;
+  --code-background: #140E36;
+  --code-foreground: #EFE9F5;
 
-  --tablehead-background: #04364A;
+  --tablehead-background: #3B0F70;
   --tablehead-foreground: #FFFFFF;
 
-  --side-nav-background: #04364A;
-  --side-nav-foreground: #E8EEF0;
-  --searchbar-background: #04364A;
+  --side-nav-background: #000004;
+  --side-nav-foreground: #EFE9F5;
+  --searchbar-background: #140E36;
 
-  --blockquote-background: #0F2A35;
-  --blockquote-foreground: #E8EEF0;
+  --blockquote-background: #1A1230;
+  --blockquote-foreground: #EFE9F5;
 
-  --warning-color: #F0703A;
-  --warning-color-dark: #D34305;
-  --warning-color-darker: #A93604;
+  --warning-color: #F7705C;
+  --warning-color-dark: #CA3E72;
+  --warning-color-darker: #A8325F;
 }
 
 /* -- Header --------------------------------------------------------------- */
 
 #top {
-  border-bottom: 4px solid #D34305;
+  border-bottom: 4px solid var(--warning-color);
 }
 
 #projectname {
@@ -157,14 +158,14 @@ a:focus {
 /* -- Navigation tree ------------------------------------------------------ */
 
 #nav-tree .selected {
-  border-left: 3px solid #D34305;
+  border-left: 3px solid var(--warning-color);
 }
 
 /* -- Code and member documentation ---------------------------------------- */
 
 div.fragment,
 .memproto {
-  border-left: 3px solid #D34305;
+  border-left: 3px solid var(--warning-color);
 }
 
 div.fragment {
@@ -205,7 +206,7 @@ mjx-container {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #5F6B70;
+  background: var(--page-secondary-foreground-color);
   border-radius: 5px;
 }
 
