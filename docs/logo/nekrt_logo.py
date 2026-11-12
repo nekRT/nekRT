@@ -3,10 +3,11 @@ points) with the area under it shaded, two balls flying off, and a streak
 orbiting the y-axis.
 
 Usage:
-    python make_logo.py                      # cividis, no axes, writes logo.png/.svg
+    python make_logo.py                      # cividis, no axes; writes logo_white*.png/.svg
+                                             # and logo_dark*.png/.svg (each square + circle)
     python make_logo.py --cmap magma --axes  # other colormap, axes on
     python make_logo.py --no-orbits          # hide the orbit streak
-    python make_logo.py --no-circle          # skip logo_circle.png/.svg
+    python make_logo.py --no-circle          # skip the circle-cropped versions
 
 Requires Python >= 3.10, numpy, matplotlib.
 """
@@ -26,7 +27,7 @@ from matplotlib.path import Path
 # ----------------------------------------------------------------------------
 @dataclass
 class Config:
-    cmap: str = "cividis"          # viridis, magma, inferno, plasma, ...
+    cmap: str = "magma"          # viridis, magma, inferno, plasma, ...
     show_axes: bool = False
     transparent: bool = False      # transparent background in saved file
     # any matplotlib color; None -> low end of the colormap (dark)
@@ -41,8 +42,8 @@ class Config:
     fill_range: tuple = (0.15, 0.75)   # vertical gradient under the curve
     curve_pos: float = 0.0     # 0.0 = darkest colour of the map
     node_pos: float = 0.0
-    ball_pos: float = 0.70             # same colour for both balls
-    streak_pos: float = 0.94           # same colour for both streaks
+    ball_pos: float = 0.7             # same colour for both balls
+    streak_pos: float = 0.92           # same colour for both streaks
 
     # Balls. Each ball is launched from (ball_x, ball_y) at ball_angle_deg
     # (degrees from +x) and flies ball_dist before stopping.
@@ -330,23 +331,33 @@ def main():
     p.add_argument("--no-circle", action="store_true",
                    help="skip the circle-cropped version")
     p.add_argument("--out", default="logo",
-                   help="output stem (writes .png and .svg, plus <stem>_circle.*)")
+                   help="output stem; writes <stem>_white and <stem>_dark, each as "
+                        "square and _circle, as .png and .svg")
     a = p.parse_args()
 
-    cfg = Config(cmap=a.cmap, show_axes=a.axes, transparent=a.transparent,
-                 show_orbits=not a.no_orbits)
-    versions = [(cfg, a.out)]
-    if not a.axes and not a.no_circle:      # a circle crop makes no sense with axes on
-        versions.append((replace(cfg, circle=True), f"{a.out}_circle"))
-    for c, stem in versions:
-        fig = make_logo(c)
-        for ext in ("png", "svg"):
-            fig.savefig(f"{stem}.{ext}", dpi=c.dpi,
-                        transparent=c.transparent or c.circle,
-                        facecolor=fig.get_facecolor())
-        plt.close(fig)
-        print(
-            f"saved {stem}.png / .svg  (cmap={c.cmap}, axes={c.show_axes}, circle={c.circle})")
+    base = Config(cmap=a.cmap, show_axes=a.axes, transparent=a.transparent,
+                  show_orbits=not a.no_orbits)
+    # Two looks: white background with the dark curve, and the colormap's own dark
+    # end as background with the curve and nodes flipped to the light end.
+    looks = {
+        "white": base,
+        "dark": replace(base, bg_color=None,
+                        curve_pos=1.0 - base.curve_pos, node_pos=1.0 - base.node_pos),
+    }
+    for look, cfg in looks.items():
+        versions = [(cfg, f"{a.out}_{look}")]
+        if not a.axes and not a.no_circle:   # a circle crop makes no sense with axes on
+            versions.append((replace(cfg, circle=True),
+                            f"{a.out}_{look}_circle"))
+        for c, stem in versions:
+            fig = make_logo(c)
+            for ext in ("png", "svg"):
+                fig.savefig(f"{stem}.{ext}", dpi=c.dpi,
+                            transparent=c.transparent or c.circle,
+                            facecolor=fig.get_facecolor())
+            plt.close(fig)
+            print(
+                f"saved {stem}.png / .svg  (cmap={c.cmap}, look={look}, circle={c.circle})")
 
 
 if __name__ == "__main__":
