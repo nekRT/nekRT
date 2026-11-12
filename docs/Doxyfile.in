@@ -11,6 +11,8 @@
 PROJECT_NAME           = nekRT
 PROJECT_BRIEF          = "Spectral element radiation transport"
 PROJECT_NUMBER         = @PROJECT_VERSION@
+PROJECT_LOGO           = @DOCS_SOURCE_DIR@/logo/logo_dark_circle.svg
+PROJECT_ICON           = @DOCS_SOURCE_DIR@/logo/logo_dark_circle.svg
 OUTPUT_DIRECTORY       = @DOCS_BUILD_DIR@
 STRIP_FROM_PATH        = @PROJECT_SOURCE_DIR@
 
