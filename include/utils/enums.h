@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
-#ifndef KINGFISHER_UTILS_ENUMS_H_
-#define KINGFISHER_UTILS_ENUMS_H_
+#ifndef NEKRT_UTILS_ENUMS_H_
+#define NEKRT_UTILS_ENUMS_H_
 
-namespace kingfisher {
+namespace nekrt {
 /**
  * @brief Available run modes.
  *
@@ -52,6 +52,6 @@ enum class SphericalQuadType { TensorProduct };
  *
  */
 enum class QuadSetType { GaussLegendre, Trapezoid, GaussLobattoLegendre };
-}  // namespace kingfisher
+}  // namespace nekrt
 
-#endif  // KINGFISHER_UTILS_ENUMS_H_
+#endif  // NEKRT_UTILS_ENUMS_H_

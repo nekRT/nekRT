@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
-#ifndef KINGFISHER_QUADRATURE_QUADRATURE_H_
-#define KINGFISHER_QUADRATURE_QUADRATURE_H_
+#ifndef NEKRT_QUADRATURE_QUADRATURE_H_
+#define NEKRT_QUADRATURE_QUADRATURE_H_
 
 #include <mfem.hpp>
 
 #include "quadrature/quad_set_params.h"
 
-namespace kingfisher {
+namespace nekrt {
 
 struct AngularParams;
 
@@ -94,9 +94,9 @@ QuadSet2D Create2DQuadSet(const QuadSet1D& first_axis,
  *
  * @param angular_params Angular quadrature parameters
  * @return QuadSet1D
- * @throws KingfisherError The polar quadrature set of a spherical quadrature
+ * @throws NekRTError The polar quadrature set of a spherical quadrature
  * must be on [-1,1].
- * @throws KingfisherError The azimuthal quadrature set of a spherical
+ * @throws NekRTError The azimuthal quadrature set of a spherical
  * quadrature set must be on [0,2\f$pi\f$].
  */
 QuadSet2D SphericalQuadSet(const AngularParams& angular_params);
@@ -112,6 +112,6 @@ QuadSet2D SphericalQuadSet(const AngularParams& angular_params);
  */
 double Integrate(const mfem::Vector& grid_function,
                  const mfem::Vector& weights);
-}  // namespace kingfisher
+}  // namespace nekrt
 
-#endif  // KINGFISHER_QUADRATURE_QUADRATURE_H_
+#endif  // NEKRT_QUADRATURE_QUADRATURE_H_

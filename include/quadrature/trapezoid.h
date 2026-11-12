@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
-#ifndef KINGFISHER_QUADRATURE_TRAPEZOID_H_
-#define KINGFISHER_QUADRATURE_TRAPEZOID_H_
+#ifndef NEKRT_QUADRATURE_TRAPEZOID_H_
+#define NEKRT_QUADRATURE_TRAPEZOID_H_
 
 #include "quadrature/quadrature.h"
 
-namespace kingfisher {
+namespace nekrt {
 /**
  * @brief Create a 1D trapezoid quadrature rule which approximates the integral
  * from \f$a\f$ to \f$b\f$.
@@ -35,6 +35,6 @@ QuadSet1D Trapezoid(const int n_points, const double a = -1.0,
 void TrapezoidNodesAndWeights(QuadSet1D& quad_set, const int n_points,
                               const double a, const double b);
 
-}  // namespace kingfisher
+}  // namespace nekrt
 
-#endif  // KINGFISHER_QUADRATURE_TRAPEZOID_H_
+#endif  // NEKRT_QUADRATURE_TRAPEZOID_H_

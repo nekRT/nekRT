@@ -58,7 +58,7 @@ If applicable, add screenshots to help explain your problem.
 
 ## Desktop (please complete the following information):
  - OS: [e.g. iOS]
- - Kingfisher version/commit: [e.g. v0.1.0]
+ - nekRT version/commit: [e.g. v0.1.0]
  - Build type: [e.g. release]:
 
 ## Additional context

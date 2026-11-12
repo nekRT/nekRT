@@ -1,6 +1,6 @@
 # Code Style
 
-Kingfisher's C++ follows the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html). This page summarizes the parts that come up most often, and adds Kingfisher's rules for data layout and for Python.
+nekRT's C++ follows the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html). This page summarizes the parts that come up most often, and adds nekRT's rules for data layout and for Python.
 
 ## Formatting
 
@@ -41,39 +41,39 @@ double* data = buffer.GetData();  // NOLINT(bugprone-...): reason
 | Constants (`constexpr`, including local ones, and namespace- or class-scope `const`) | `kPascalCase` | `kMaxOrder` |
 | Enumerators | `PascalCase` | `BoundaryCondition::Vacuum` |
 | Local non-`constexpr` `const` variables | `snake_case` | `const int num_dofs = ...` |
-| Namespaces | `snake_case` | `kingfisher` |
-| Macros | `KINGFISHER_UPPER_CASE` | `KINGFISHER_USE_MPI` |
+| Namespaces | `snake_case` | `nekrt` |
+| Macros | `NEKRT_UPPER_CASE` | `NEKRT_USE_MPI` |
 | Files | `snake_case.cc`, `snake_case.h` | `sweep_operator.cc` |
 | Test files | `snake_case_test.cc` | `sweep_operator_test.cc` |
 
-Always declare enums as `enum class`, never as a plain `enum`. A scoped enum's enumerators don't leak into the enclosing scope and don't convert implicitly to `int`. Because every enumerator is written after its type, as in `BoundaryCondition::Vacuum`, it doesn't need Google's `k` prefix. This rule covers the enums Kingfisher declares. Using plain enums from MFEM or other libraries is fine. clang-tidy 18 can't check this rule, so reviewers do.
+Always declare enums as `enum class`, never as a plain `enum`. A scoped enum's enumerators don't leak into the enclosing scope and don't convert implicitly to `int`. Because every enumerator is written after its type, as in `BoundaryCondition::Vacuum`, it doesn't need Google's `k` prefix. This rule covers the enums nekRT declares. Using plain enums from MFEM or other libraries is fine. clang-tidy 18 can't check this rule, so reviewers do.
 
 ## Files and headers
 
 Code is grouped into one subdirectory per subsystem, for example `angular/`, `spatial/`, `transport/`, `materials/`, and `io/`. Public headers, sources, and tests use the same subdirectories:
 
 ```text
-include/kingfisher/angular/quadrature.h
-src/angular/quadrature.cc
-tests/angular/quadrature_test.cc
+include/quadrature/quadrature.h
+src/quadrature/quadrature.cc
+tests/quadrature/quadrature_test.cc
 ```
 
 - Put a subsystem's data structs in the same directory as the free functions that work on them. Don't divide code by kind, such as a `data/` directory and a `kernels/` directory, and don't add a catch-all `utils/` directory.
 - Create a subdirectory when its first file is added, not ahead of time. `src/main.cc` stays at the top of `src/`.
-- Sources are `.cc` files in `src/`. Public headers are `.h` files in `include/kingfisher/`, and are included with their full path from there, as in `#include "kingfisher/angular/quadrature.h"`.
-- Header guards are `KINGFISHER_<PATH>_<FILE>_H_`, where `<PATH>` is the path under `include/kingfisher/`. For example, `include/kingfisher/angular/quadrature.h` uses `KINGFISHER_ANGULAR_QUADRATURE_H_`.
-- Includes are ordered as in the Google guide: the related header, C system headers, the C++ standard library, other libraries (MFEM, fmt, rapidyaml), then Kingfisher headers. clang-format sorts within each group.
+- Sources are `.cc` files in `src/`. Public headers are `.h` files in `include/`, and are included with their full path from there, as in `#include "quadrature/quadrature.h"`.
+- Header guards are `NEKRT_<PATH>_<FILE>_H_`, where `<PATH>` is the path under `include/`. For example, `include/quadrature/quadrature.h` uses `NEKRT_QUADRATURE_QUADRATURE_H_`.
+- Includes are ordered as in the Google guide: the related header, C system headers, the C++ standard library, other libraries (MFEM, fmt, rapidyaml), then nekRT headers. clang-format sorts within each group.
 
 ## Namespaces
 
-All Kingfisher code is in the single namespace `kingfisher`, as all of MFEM is in `mfem`. Subdirectories organize files and are not mirrored by sub-namespaces.
+All nekRT code is in the single namespace `nekrt`, as all of MFEM is in `mfem`. Subdirectories organize files and are not mirrored by sub-namespaces.
 
 - Put helpers that are used in only one `.cc` file in an anonymous namespace in that file.
 - Add a sub-namespace only when a group of free functions has generic names, such as `Initialize()` or `Apply()`, that would otherwise need a prefix to be clear. Functions that take different struct types can share a name through overloading and don't need one.
 
 ## Data-oriented design
 
-Kingfisher's hot loops (angular sweeps, element assembly, source and group iterations) touch large amounts of data on every pass, so how the data is laid out in memory matters more than how it is wrapped in classes. Design the data first, then write the functions that transform it.
+nekRT's hot loops (angular sweeps, element assembly, source and group iterations) touch large amounts of data on every pass, so how the data is laid out in memory matters more than how it is wrapped in classes. Design the data first, then write the functions that transform it.
 
 **Store hot data as structure of arrays.** Prefer one contiguous buffer per quantity over a container of objects:
 
@@ -107,18 +107,18 @@ Flat buffers indexed by group, angle, and element (with the layout documented ne
 
 ## Error handling
 
-Report errors through `utils/errors.h`, not with a bare `throw`, `assert`, or `MFEM_ABORT`. Both functions throw `kingfisher::Error`, whose message starts with the source file and line.
+Report errors through `utils/errors.h`, not with a bare `throw`, `assert`, or `MFEM_ABORT`. Both functions throw `nekrt::Error`, whose message starts with the source file and line.
 
-- `KingfisherError(condition, message)` throws when `condition` is **true**. Use it for user input and other conditions that can fail in a correct program. It is always active.
-- `KINGFISHER_ASSERT(condition, message)` throws when `condition` is **false**. Use it for internal invariants. It is active only in builds without `NDEBUG` and does not evaluate its arguments otherwise.
+- `NekRTError(condition, message)` throws when `condition` is **true**. Use it for user input and other conditions that can fail in a correct program. It is always active.
+- `NEKRT_ASSERT(condition, message)` throws when `condition` is **false**. Use it for internal invariants. It is active only in builds without `NDEBUG` and does not evaluate its arguments otherwise.
 
 ```cpp
-KingfisherError(num_groups <= 0,
-                fmt::format("num_groups must be positive, got {}", num_groups));
-KINGFISHER_ASSERT(flux.Size() == num_dofs, "flux has the wrong size");
+NekRTError(num_groups <= 0,
+           fmt::format("num_groups must be positive, got {}", num_groups));
+NEKRT_ASSERT(flux.Size() == num_dofs, "flux has the wrong size");
 ```
 
-`KINGFISHER_ASSERT` is a macro, so that it can compile to nothing, and it is the one name that doesn't follow the function naming rule. Don't use either one inside hot loops.
+`NEKRT_ASSERT` is a macro, so that it can compile to nothing, and it is the one name that doesn't follow the function naming rule. Don't use either one inside hot loops.
 
 ## Documentation comments
 
@@ -142,7 +142,7 @@ Cite the method's source with a reference to `docs/source/references.bib` in the
 
 ## Python
 
-Kingfisher will have a Python API for generating YAML input files. Python code follows [PEP 8](https://peps.python.org/pep-0008/), and in addition:
+nekRT will have a Python API for generating YAML input files. Python code follows [PEP 8](https://peps.python.org/pep-0008/), and in addition:
 
 - Public functions and classes have [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html) docstrings and type hints.
 - Filesystem paths use `pathlib.Path`.

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
-#ifndef KINGFISHER_QUADRATURE_GAUSS_LOBATTO_LEGENDRE_H_
-#define KINGFISHER_QUADRATURE_GAUSS_LOBATTO_LEGENDRE_H_
+#ifndef NEKRT_QUADRATURE_GAUSS_LOBATTO_LEGENDRE_H_
+#define NEKRT_QUADRATURE_GAUSS_LOBATTO_LEGENDRE_H_
 
 #include "quadrature/quadrature.h"
 
@@ -10,7 +10,7 @@
 // given by Deville et al. in the textbook "High-Order Methods for
 // Incompressible Fluid Flow" (978-0-521-45309-7).
 
-namespace kingfisher {
+namespace nekrt {
 /**
  * @brief Create a 1D Gauss-Lobatto-Legendre quadrature set on the standard
  * interval \f$\xi\in [-1,1]\f$.
@@ -36,6 +36,6 @@ void GaussLobattoLegendreNodes(QuadSet1D& gll_quad_set, const int n_points);
  * @param gll_quad_set QuadSet1D quadrature object to modify
  */
 void GaussLobattoLegendreWeights(QuadSet1D& gll_quad_set);
-}  // namespace kingfisher
+}  // namespace nekrt
 
-#endif  // KINGFISHER_QUADRATURE_GAUSS_LOBATTO_LEGENDRE_H_
+#endif  // NEKRT_QUADRATURE_GAUSS_LOBATTO_LEGENDRE_H_

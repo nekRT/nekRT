@@ -3,7 +3,7 @@
 # Third-party packages are added in cmake/Dependencies.cmake.
 
 add_library(
-	kingfisher_lib
+	nekrt_lib
 	quadrature/trapezoid.cc
 	quadrature/gauss_lobatto_legendre.cc
 	quadrature/gauss_legendre.cc
@@ -13,13 +13,13 @@ add_library(
 	utils/legendre_polynomials.cc
 )
 
-target_compile_features(kingfisher_lib PUBLIC cxx_std_20)
-target_include_directories(kingfisher_lib PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_compile_features(nekrt_lib PUBLIC cxx_std_20)
+target_include_directories(nekrt_lib PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 # The dependencies are PUBLIC so that the executable and the tests get them
-# through kingfisher_lib.
+# through nekrt_lib.
 # NOTE(parallel): MPI::MPI_CXX goes here once MFEM is built with MPI.
-target_link_libraries(kingfisher_lib PUBLIC fmt::fmt ryml::ryml mfem)
+target_link_libraries(nekrt_lib PUBLIC fmt::fmt ryml::ryml mfem)
 
-add_executable(kingfisher main.cc)
-target_link_libraries(kingfisher PRIVATE kingfisher_lib)
+add_executable(nekrt main.cc)
+target_link_libraries(nekrt PRIVATE nekrt_lib)

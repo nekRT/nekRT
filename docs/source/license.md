@@ -2,7 +2,7 @@
 
 ## Code
 
-Kingfisher is distributed under the BSD-3-Clause license.
+nekRT is distributed under the BSD-3-Clause license.
 
 ```{eval-rst}
 .. license-info:: BSD-3-Clause
@@ -10,9 +10,4 @@ Kingfisher is distributed under the BSD-3-Clause license.
 
 ```{literalinclude} ../../LICENSE
 :language: text
-```
-
-## Logo
-
-```{include} ../logo/license_kingfisher.txt
 ```

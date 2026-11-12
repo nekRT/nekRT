@@ -28,7 +28,7 @@ The easiest way to get all of these is the conda environment in `docs/environmen
 
 ```console
 $ conda env create -f docs/environment.yml
-$ conda activate kingfisher-docs
+$ conda activate nekrt-docs
 ```
 
 Alternatively, install the Python packages with pip, into a virtual environment for example, and the rest with your system package manager:
@@ -44,7 +44,7 @@ Then build the site:
 $ cmake --workflow --preset docs
 ```
 
-This runs Doxygen and then Sphinx, and writes the site to `build/docs/docs/html/`. Sphinx warnings are treated as errors, as they are in continuous integration. The `docs` preset doesn't compile Kingfisher or download its libraries.
+This runs Doxygen and then Sphinx, and writes the site to `build/docs/docs/html/`. Sphinx warnings are treated as errors, as they are in continuous integration. The `docs` preset doesn't compile nekRT or download its libraries.
 
 While writing, use the live preview instead. It serves the site locally and rebuilds a page when its source file is saved:
 
@@ -90,8 +90,8 @@ Recurring symbols are defined once as MathJax macros in `mathjax3_config` in `do
 | `\sigt` | $\sigt$ | total cross section |
 | `\sigs` | $\sigs$ | scattering cross section |
 
-Cite a reference from `references.bib` with `` {cite}`key` ``, and link to a class in the API reference with `` {cpp:class}`kingfisher::ClassName` `` once it has a page under [](../api/index.md).
+Cite a reference from `references.bib` with `` {cite}`key` ``, and link to a class in the API reference with `` {cpp:class}`nekrt::ClassName` `` once it has a page under [](../api/index.md).
 
 ## Appearance
 
-The site uses the [Furo](https://pradyunsg.me/furo/) theme, which follows the reader's system light or dark setting and has a toggle at the top of each page. Its light and dark palettes are set in `html_theme_options` in `docs/source/conf.py`, with a few additions in `docs/source/_static/css/kingfisher.css`. The Doxygen reference is styled separately in `docs/doxygen/customization.css`. All three take their colors from the logo; change a color in each to keep them in step.
+The site uses the [Furo](https://pradyunsg.me/furo/) theme, which follows the reader's system light or dark setting and has a toggle at the top of each page. Its light and dark palettes are set in `html_theme_options` in `docs/source/conf.py`, with a few additions in `docs/source/_static/css/nekrt.css`. The Doxygen reference is styled separately in `docs/doxygen/customization.css`. All three share one palette; change a color in each to keep them in step.

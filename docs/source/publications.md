@@ -1,8 +1,8 @@
 # Publications
 
-## Citing Kingfisher
+## Citing nekRT
 
-Kingfisher does not have a reference publication yet. Until it does, please cite the repository: <https://github.com/kingfisher-project/kingfisher>.
+nekRT does not have a reference publication yet. Until it does, please cite the repository: <https://github.com/nekRT/nekRT>.
 
 ## References
 

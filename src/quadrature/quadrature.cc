@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
 #include "quadrature/quadrature.h"
 
@@ -12,26 +12,26 @@
 #include "utils/input_parameters.h"
 #include "utils/numerics.h"
 
-namespace kingfisher {
+namespace nekrt {
 QuadSet1D Create1DQuadSet(const QuadSetParams& quad_set_params) {
   switch (quad_set_params.type) {
     case QuadSetType::Trapezoid:
       return Trapezoid(static_cast<int>(quad_set_params.n_points),
                        quad_set_params.min, quad_set_params.max);
     case QuadSetType::GaussLegendre:
-      KingfisherError(!(DoubleEqual(quad_set_params.min, -1.0) &&
-                        DoubleEqual(quad_set_params.max, 1.0)),
-                      "GaussLegendre quadrature set can only be created on the "
-                      "unit interval");
+      NekRTError(!(DoubleEqual(quad_set_params.min, -1.0) &&
+                   DoubleEqual(quad_set_params.max, 1.0)),
+                 "GaussLegendre quadrature set can only be created on the "
+                 "unit interval");
       return GaussLegendre(static_cast<int>(quad_set_params.n_points));
     case QuadSetType::GaussLobattoLegendre:
-      KingfisherError(!(DoubleEqual(quad_set_params.min, -1.0) &&
-                        DoubleEqual(quad_set_params.max, 1.0)),
-                      "GaussLobattoLegendre quadrature set can only be created "
-                      "on the unit interval");
+      NekRTError(!(DoubleEqual(quad_set_params.min, -1.0) &&
+                   DoubleEqual(quad_set_params.max, 1.0)),
+                 "GaussLobattoLegendre quadrature set can only be created "
+                 "on the unit interval");
       return GaussLobattoLegendre(static_cast<int>(quad_set_params.n_points));
     default:
-      KingfisherError("QuadSetType passed to Create1DQuadSet not supported.");
+      NekRTError("QuadSetType passed to Create1DQuadSet not supported.");
   }
 }
 
@@ -55,11 +55,11 @@ QuadSet2D Create2DQuadSet(const QuadSet1D& first_axis,
 QuadSet2D SphericalQuadSet(const AngularParams& angular_params) {
   switch (angular_params.quad_type) {
     case SphericalQuadType::TensorProduct: {
-      KingfisherError(!(DoubleEqual(angular_params.polar_quad_set.min, -1.0) &&
-                        DoubleEqual(angular_params.polar_quad_set.max, 1.0)),
-                      "The polar quadrature set of a spherical quadrature must "
-                      "be on [-1, 1].");
-      KingfisherError(
+      NekRTError(!(DoubleEqual(angular_params.polar_quad_set.min, -1.0) &&
+                   DoubleEqual(angular_params.polar_quad_set.max, 1.0)),
+                 "The polar quadrature set of a spherical quadrature must "
+                 "be on [-1, 1].");
+      NekRTError(
           !(DoubleEqual(angular_params.azimuthal_quad_set.min, 0.0) &&
             DoubleEqual(angular_params.azimuthal_quad_set.max,
                         2.0 * std::numbers::pi)),
@@ -71,15 +71,15 @@ QuadSet2D SphericalQuadSet(const AngularParams& angular_params) {
     }
 
     default:
-      KingfisherError("Angular parameters quadrature type not supported.");
+      NekRTError("Angular parameters quadrature type not supported.");
   }
 }
 
 double Integrate(const mfem::Vector& grid_function,
                  const mfem::Vector& weights) {
-  KINGFISHER_ASSERT(grid_function.Size() == weights.Size(),
-                    "Sizes of grid_function and weights passed to Integrate "
-                    "are not the same.");
+  NEKRT_ASSERT(grid_function.Size() == weights.Size(),
+               "Sizes of grid_function and weights passed to Integrate "
+               "are not the same.");
   return InnerProduct(grid_function, weights);
 }
-}  // namespace kingfisher
+}  // namespace nekrt

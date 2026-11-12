@@ -21,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # The docs preset doesn't compile Kingfisher, so MFEM is never fetched
+      # The docs preset doesn't compile nekRT, so MFEM is never fetched
       # here. The build and tests run in ci.yml.
       # The same conda environment as for local builds; see docs/environment.yml.
       - uses: mamba-org/setup-micromamba@v2

@@ -1,6 +1,6 @@
 <!--
 Please read the contributing guide first:
-https://kingfisher-project.github.io/kingfisher/developer-guide/contributing.html
+https://nekrt.github.io/nekRT/developer-guide/contributing.html
 -->
 
 # Description
@@ -27,7 +27,7 @@ combination if you used more than one. If no AI tools were used, write "None".
 
 - [ ] I have performed a self-review of my own code
 - [ ] I have run clang-format and clang-tidy (version 18) on any C++ source files
-- [ ] New C++ names follow the [Google C++ style](https://kingfisher-project.github.io/kingfisher/developer-guide/style.html#naming)
+- [ ] New C++ names follow the [Google C++ style](https://nekrt.github.io/nekRT/developer-guide/style.html#naming)
 - [ ] New Python code follows PEP 8 (if applicable)
 - [ ] I have added tests for every new function, class, and method, and a regression test for any bug fix
 - [ ] New numerical methods have verification tests (manufactured or analytic solutions, convergence rates)

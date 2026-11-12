@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
 #include "quadrature/gauss_lobatto_legendre.h"
 
@@ -15,7 +15,7 @@
 #include "utils/legendre_polynomials.h"
 #include "utils/numerics.h"
 
-namespace kingfisher {
+namespace nekrt {
 
 // =======================================================================
 // Properties that must hold for every number of points (n >= 2)
@@ -186,7 +186,7 @@ TEST(GaussLobattoLegendre, FivePointRuleMatchesClosedForm) {
 // Invalid input
 // =======================================================================
 
-// KINGFISHER_ASSERT is compiled out when NDEBUG is defined.
+// NEKRT_ASSERT is compiled out when NDEBUG is defined.
 #ifndef NDEBUG
 TEST(GaussLobattoLegendre, FewerThanTwoPointsThrows) {
   QuadSet1D quad_set;
@@ -221,4 +221,4 @@ TEST(GaussLobattoLegendre, ExponentialIntegralConverges) {
               expected, 1e-13);
 }
 
-}  // namespace kingfisher
+}  // namespace nekrt

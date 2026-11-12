@@ -1,6 +1,6 @@
 # The Transport Equation
 
-Kingfisher solves the steady-state linear Boltzmann transport equation for the angular flux $\angflux(\vr, \vOmega, E)$:
+nekRT solves the steady-state linear Boltzmann transport equation for the angular flux $\angflux(\vr, \vOmega, E)$:
 
 $$
 \vOmega \cdot \nabla \angflux(\vr, \vOmega, E) + \sigt(\vr, E)\, \angflux(\vr, \vOmega, E)
@@ -15,7 +15,7 @@ $$
 $$
 
 :::{note}
-This page is a placeholder beyond the statement of {eq}`eq-transport`. It will cover the energy discretization, boundary conditions, and the form of the equation that Kingfisher discretizes.
+This page is a placeholder beyond the statement of {eq}`eq-transport`. It will cover the energy discretization, boundary conditions, and the form of the equation that nekRT discretizes.
 :::
 
 Symbols such as `\angflux`, `\vOmega`, and `\sigt` are shared macros defined in `docs/source/conf.py`; see [](../developer-guide/documentation.md).

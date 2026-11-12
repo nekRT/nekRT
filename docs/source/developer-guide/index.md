@@ -1,6 +1,6 @@
 # Developer's Guide
 
-How to build, test, document, and contribute to Kingfisher.
+How to build, test, document, and contribute to nekRT.
 
 ```{toctree}
 :maxdepth: 2

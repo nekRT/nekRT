@@ -207,7 +207,7 @@ def _cell(texts, classes=()):
 
 
 def _table(rows):
-    table = nodes.table(classes=["kf-schema-table"])
+    table = nodes.table(classes=["nekrt-schema-table"])
     tgroup = nodes.tgroup(cols=len(_HEADER))
     table += tgroup
     for width in _WIDTHS:
@@ -226,7 +226,7 @@ def _table(rows):
     tgroup += head
     body = nodes.tbody()
     for field, kind, requirement, constraints, description in rows:
-        classes = ["kf-required"] if requirement == "yes" else []
+        classes = ["nekrt-required"] if requirement == "yes" else []
         body += row(
             [
                 _cell([field]),

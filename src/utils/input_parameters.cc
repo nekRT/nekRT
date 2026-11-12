@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
 #include "utils/input_parameters.h"
 
@@ -20,11 +20,11 @@
 
 #include "utils/errors.h"
 
-namespace kingfisher {
+namespace nekrt {
 namespace {
 
 // ryml aborts by default. These handlers turn its errors into
-// kingfisher::Error. They are installed on the Tree rather than globally, so
+// nekrt::Error. They are installed on the Tree rather than globally, so
 // nothing outside this file is affected.
 std::string ToString(ryml::csubstr s) { return std::string(s.str, s.len); }
 
@@ -201,7 +201,7 @@ void ReadQuadSet(const ryml::ConstNodeRef& node, double min, double max,
                  QuadSetParams& quad) {
   quad.type = ParseEnum(Require(node, {"type"}), kQuadSets);
   Require(node, {"n_directions"}).load(&quad.n_points);
-  KingfisherError(quad.n_points == 0, "'n_directions' must be at least 1.");
+  NekRTError(quad.n_points == 0, "'n_directions' must be at least 1.");
   quad.min = min;
   quad.max = max;
 }
@@ -277,9 +277,9 @@ std::vector<double> FlattenScatter(
   std::vector<double> flat;
   flat.reserve(scatter.size() * num_groups * num_groups);
   for (const auto& moment : scatter) {
-    KingfisherError(moment.size() != num_groups, error);
+    NekRTError(moment.size() != num_groups, error);
     for (const auto& from_group : moment) {
-      KingfisherError(from_group.size() != num_groups, error);
+      NekRTError(from_group.size() != num_groups, error);
       flat.insert(flat.end(), from_group.begin(), from_group.end());
     }
   }
@@ -325,8 +325,8 @@ InputParameters ParseInputString(std::string yaml) {
   ryml::ConstNodeRef root = tree.crootref();
   if (root.is_stream()) {
     // The file starts with `---`, so the root holds the documents.
-    KingfisherError(root.num_children() != 1,
-                    "Input file must contain exactly one YAML document.");
+    NekRTError(root.num_children() != 1,
+               "Input file must contain exactly one YAML document.");
     root = root.first_child();
   }
 
@@ -334,7 +334,7 @@ InputParameters ParseInputString(std::string yaml) {
 
   int version = -1;
   Require(root, {"version"}).load(&version);
-  KingfisherError(version != 0, "Input file must be version 0.");
+  NekRTError(version != 0, "Input file must be version 0.");
 
   InputParameters input_params;
   ReadProblem(root, input_params.problem_params);
@@ -354,8 +354,7 @@ InputParameters ParseInputString(std::string yaml) {
 
 InputParameters ReadInputFile(const std::string& filename) {
   std::ifstream input_file(filename, std::ios::binary);
-  KingfisherError(!input_file,
-                  "Failed to open yaml input file '" + filename + "'.");
+  NekRTError(!input_file, "Failed to open yaml input file '" + filename + "'.");
 
   std::string contents((std::istreambuf_iterator<char>(input_file)),
                        std::istreambuf_iterator<char>());
@@ -379,11 +378,10 @@ bool IsNameChar(char c) {
 void CheckName(std::string_view block, const std::string& name) {
   bool valid = !name.empty() && IsNameStart(name.front());
   for (const char c : name) valid = valid && IsNameChar(c);
-  KingfisherError(!valid, "Invalid name '" + name + "' in '" +
-                              std::string(block) +
-                              "'. Names must start with a lowercase letter and "
-                              "contain only lowercase letters, digits, and "
-                              "underscores.");
+  NekRTError(!valid, "Invalid name '" + name + "' in '" + std::string(block) +
+                         "'. Names must start with a lowercase letter and "
+                         "contain only lowercase letters, digits, and "
+                         "underscores.");
 }
 
 // Checks every name in `entries` and that none is repeated.
@@ -392,7 +390,7 @@ void CheckNames(std::string_view block, const std::vector<T>& entries) {
   std::unordered_set<std::string_view> seen_names;
   for (const T& entry : entries) {
     CheckName(block, entry.name);
-    KingfisherError(
+    NekRTError(
         !seen_names.insert(entry.name).second,
         "Duplicate name '" + entry.name + "' in '" + std::string(block) + "'.");
   }
@@ -401,7 +399,7 @@ void CheckNames(std::string_view block, const std::vector<T>& entries) {
 // NaN compares false against everything, so test for the valid range instead
 // of the invalid one.
 void CheckFiniteNonNegative(const std::string& what, double value) {
-  KingfisherError(
+  NekRTError(
       !(std::isfinite(value) && value >= 0.0),
       what + " = " + std::to_string(value) + " must be finite and >= 0.");
 }
@@ -421,13 +419,13 @@ void CheckInputParameters(const InputParameters& input_parameters) {
   const std::size_t num_groups =
       input_parameters.materials.front().total_xs.size();
   for (const SourceParams& source : input_parameters.sources) {
-    KingfisherError(source.expression.size() != num_groups,
-                    "Source '" + source.name + "' has " +
-                        std::to_string(source.expression.size()) +
-                        " expressions, but the materials have " +
-                        std::to_string(num_groups) +
-                        " energy groups. One expression per group is "
-                        "required.");
+    NekRTError(source.expression.size() != num_groups,
+               "Source '" + source.name + "' has " +
+                   std::to_string(source.expression.size()) +
+                   " expressions, but the materials have " +
+                   std::to_string(num_groups) +
+                   " energy groups. One expression per group is "
+                   "required.");
   }
 }
 
@@ -441,10 +439,10 @@ void CheckMaterialParams(const std::vector<MaterialParams>& material_params) {
   for (const MaterialParams& material : material_params) {
     const std::string prefix = "Material '" + material.name + "': ";
     const std::size_t num_groups = material.total_xs.size();
-    KingfisherError(num_groups == 0,
-                    prefix + "total_xs must have at least one group.");
-    KingfisherError(material.scatter_matrix.empty(),
-                    prefix + "scatter_xs must have at least one moment.");
+    NekRTError(num_groups == 0,
+               prefix + "total_xs must have at least one group.");
+    NekRTError(material.scatter_matrix.empty(),
+               prefix + "scatter_xs must have at least one moment.");
 
     for (std::size_t group = 0; group < num_groups; ++group) {
       CheckFiniteNonNegative(prefix + "total_xs[" + std::to_string(group) + "]",
@@ -461,12 +459,12 @@ void CheckMaterialParams(const std::vector<MaterialParams>& material_params) {
                              material.scatter_matrix[i]);
     }
 
-    KingfisherError(
-        num_groups != material_params.front().total_xs.size(),
-        prefix + "has " + std::to_string(num_groups) + " energy groups, but '" +
-            material_params.front().name + "' has " +
-            std::to_string(material_params.front().total_xs.size()) +
-            ". All materials must have the same number of groups.");
+    NekRTError(num_groups != material_params.front().total_xs.size(),
+               prefix + "has " + std::to_string(num_groups) +
+                   " energy groups, but '" + material_params.front().name +
+                   "' has " +
+                   std::to_string(material_params.front().total_xs.size()) +
+                   ". All materials must have the same number of groups.");
   }
 }
 
@@ -475,18 +473,18 @@ void CheckSourceParams(const std::vector<SourceParams>& source_params) {
 
   for (const SourceParams& source : source_params) {
     const std::string prefix = "Source '" + source.name + "': ";
-    KingfisherError(source.expression.empty(),
-                    prefix + "expression must have at least one group.");
+    NekRTError(source.expression.empty(),
+               prefix + "expression must have at least one group.");
     for (std::size_t group = 0; group < source.expression.size(); ++group) {
-      KingfisherError(source.expression[group].empty(),
-                      prefix + "expression[" + std::to_string(group) +
-                          "] must not be empty.");
+      NekRTError(source.expression[group].empty(), prefix + "expression[" +
+                                                       std::to_string(group) +
+                                                       "] must not be empty.");
     }
   }
 }
 
 void CheckSpatialParams(const SpatialParams& spatial_params) {
-  KingfisherError(
+  NekRTError(
       spatial_params.nodes_per_axis < 2,
       "`spatial.nodes_per_axis` is " +
           std::to_string(spatial_params.nodes_per_axis) +
@@ -495,14 +493,14 @@ void CheckSpatialParams(const SpatialParams& spatial_params) {
 
 void CheckSolverParams(const SolverParams& solver_params) {
   const SourceIterParams& source_iter = solver_params.source_iter_params;
-  KingfisherError(
+  NekRTError(
       !(std::isfinite(source_iter.tolerance) && source_iter.tolerance > 0.0),
       "`solver.source_iterations.tolerance` = " +
           std::to_string(source_iter.tolerance) +
           " must be finite and greater than 0.");
-  KingfisherError(source_iter.max_iterations < 1,
-                  "`solver.source_iterations.max_iterations` must be at "
-                  "least 1.");
+  NekRTError(source_iter.max_iterations < 1,
+             "`solver.source_iterations.max_iterations` must be at "
+             "least 1.");
 }
 
-}  // namespace kingfisher
+}  // namespace nekrt

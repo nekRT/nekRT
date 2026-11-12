@@ -1,9 +1,9 @@
-# Kingfisher
+# nekRT
 
-Kingfisher is a deterministic spectral element radiation transport code built on [MFEM](https://mfem.org). It is being developed by Liam Pohlmann at the University of Illinois Urbana-Champaign and is distributed under the [BSD-3-Clause license](license.md).
+nekRT is a deterministic spectral element radiation transport code built on [MFEM](https://mfem.org). It is being developed by Liam Pohlmann at the University of Illinois Urbana-Champaign and is distributed under the [BSD-3-Clause license](license.md).
 
 :::{warning}
-Kingfisher is in early development. This documentation is being written alongside the code, and many pages are placeholders.
+nekRT is in early development. This documentation is being written alongside the code, and many pages are placeholders.
 :::
 
 ::::{grid} 1 2 2 2
@@ -13,7 +13,7 @@ Kingfisher is in early development. This documentation is being written alongsid
 :link: getting-started/index
 :link-type: doc
 
-Install Kingfisher and run a first problem.
+Install nekRT and run a first problem.
 :::
 
 :::{grid-item-card} User's Guide
@@ -27,14 +27,14 @@ Input files, meshes, materials, running, and output.
 :link: theory/index
 :link-type: doc
 
-The transport equation and how Kingfisher discretizes and solves it.
+The transport equation and how nekRT discretizes and solves it.
 :::
 
 :::{grid-item-card} C++ API
 :link: api/index
 :link-type: doc
 
-Reference for Kingfisher's classes and functions.
+Reference for nekRT's classes and functions.
 :::
 ::::
 

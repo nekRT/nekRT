@@ -1,6 +1,6 @@
 # cmake/Dependencies.cmake
 #
-# Every third-party library Kingfisher builds against comes from CPM here. Set
+# Every third-party library nekRT builds against comes from CPM here. Set
 # CPM_SOURCE_CACHE (for example to ~/.cache/CPM) so that all build directories
 # share one copy of each download instead of fetching MFEM again for each preset.
 #
@@ -11,7 +11,7 @@
 CPMAddPackage(URI "gh:fmtlib/fmt#12.2.0" SYSTEM YES)
 CPMAddPackage(URI "gh:biojppm/rapidyaml@0.16.0" SYSTEM YES)
 
-if(KINGFISHER_BUILD_TESTS)
+if(NEKRT_BUILD_TESTS)
     CPMAddPackage(
         NAME googletest
         GITHUB_REPOSITORY google/googletest
@@ -24,7 +24,7 @@ endif()
 # MFEM's library target is plain `mfem`. It has no `mfem::` namespace, either
 # here or from an installed MFEMConfig.cmake.
 #
-# NOTE(parallel): To build MFEM (and so Kingfisher) with MPI:
+# NOTE(parallel): To build MFEM (and so nekRT) with MPI:
 #   1. Change "MFEM_USE_MPI OFF" to ON. MFEM_USE_METIS follows it by default,
 #      so remove "MFEM_USE_METIS OFF" as well.
 #   2. Provide hypre and METIS. The simplest way is to let MFEM fetch them

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2026, Liam Pohlmann
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
 /* The following was written heavily based on the teachings and codes found in
  * the book "Numerical Methods in Physics with Python, Second Edition" by Alex
@@ -8,12 +8,12 @@
  * https://numphyspy.org/.
  */
 
-#ifndef KINGFISHER_UTILS_LEGENDRE_POLYNOMIALS_H_
-#define KINGFISHER_UTILS_LEGENDRE_POLYNOMIALS_H_
+#ifndef NEKRT_UTILS_LEGENDRE_POLYNOMIALS_H_
+#define NEKRT_UTILS_LEGENDRE_POLYNOMIALS_H_
 
 #include <mfem.hpp>
 
-namespace kingfisher {
+namespace nekrt {
 /**
  * @brief Computes the Legendre polynomial of degree \f$n\f$ at a point \f$x\f$
  * using the recursive formula:
@@ -158,6 +158,6 @@ double LegendrePrimeRoot(const int n, const int k);
  * @return double
  */
 double ApproximateLegendrePrimeRoot(const int n, const int k);
-}  // namespace kingfisher
+}  // namespace nekrt
 
-#endif  // KINGFISHER_UTILS_LEGENDRE_POLYNOMIALS_H_
+#endif  // NEKRT_UTILS_LEGENDRE_POLYNOMIALS_H_

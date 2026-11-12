@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
 #include "utils/legendre_polynomials.h"
 
@@ -8,7 +8,7 @@
 #include "utils/errors.h"
 #include "utils/numerics.h"
 
-namespace kingfisher {
+namespace nekrt {
 
 double LegendrePolynomial(const int n, const double x) {
   switch (n) {
@@ -86,11 +86,11 @@ double LegendreRoot(const int n, const int k) {
     if (relative_error < 1e-12) return x_new;
     x_old = x_new;
   }
-  KingfisherError("LegendreRoot did not converge.");
+  NekRTError("LegendreRoot did not converge.");
 }
 
 double ApproximateLegendreRoot(const int n, const int k) {
-  KINGFISHER_ASSERT(k < n, "k must be less than n.");
+  NEKRT_ASSERT(k < n, "k must be less than n.");
 
   return std::cos((4.0 * static_cast<double>(k) + 3.0) /
                   (4.0 * static_cast<double>(n) + 2.0) * M_PI);
@@ -125,12 +125,12 @@ double LegendrePrimeRoot(const int n, const int k) {
   error_message << std::scientific << std::setprecision(6)
                 << "LegendrePrimeRoot did not converge. "
                 << " Relative Error: " << relative_error;
-  KingfisherError(error_message.str());
+  NekRTError(error_message.str());
 }
 
 double ApproximateLegendrePrimeRoot(const int n, const int k) {
-  KINGFISHER_ASSERT(k < n - 1, "k must be less than n-1.");
+  NEKRT_ASSERT(k < n - 1, "k must be less than n-1.");
   return -(ApproximateLegendreRoot(n, k) + ApproximateLegendreRoot(n, k + 1)) /
          2.0;
 }
-}  // namespace kingfisher
+}  // namespace nekrt

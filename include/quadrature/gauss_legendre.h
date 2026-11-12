@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
-#ifndef KINGFISHER_QUADRATURE_GAUSS_LEGENDRE_H_
-#define KINGFISHER_QUADRATURE_GAUSS_LEGENDRE_H_
+#ifndef NEKRT_QUADRATURE_GAUSS_LEGENDRE_H_
+#define NEKRT_QUADRATURE_GAUSS_LEGENDRE_H_
 
 #include "quadrature/quadrature.h"
 
-namespace kingfisher {
+namespace nekrt {
 /**
  * @brief Create the 1D Gauss-Legendre quadrature on the interval \f$\xi\in
  * [-1,1]\f$.
@@ -33,6 +33,6 @@ void GaussLegendreNodes(QuadSet1D& gl_quad_set, const int n_points);
  */
 void GaussLegendreWeights(QuadSet1D& gl_quad_set);
 
-}  // namespace kingfisher
+}  // namespace nekrt
 
-#endif  // KINGFISHER_QUADRATURE_GAUSS_LEGENDRE_H_
+#endif  // NEKRT_QUADRATURE_GAUSS_LEGENDRE_H_

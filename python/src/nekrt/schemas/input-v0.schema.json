@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://kingfisher-project.github.io/schemas/input-v0.schema.json",
-  "title": "Kingfisher Input File Schema",
-  "description": "Schema for Kingfisher's YAML input file, format version 0. Cross-references (region materials and sources, unique names) and group-count consistency are checked by the code, not by this schema.",
+  "$id": "https://nekrt.github.io/schemas/input-v0.schema.json",
+  "title": "nekRT Input File Schema",
+  "description": "Schema for nekRT's YAML input file, format version 0. Cross-references (region materials and sources, unique names) and group-count consistency are checked by the code, not by this schema.",
   "type": "object",
   "additionalProperties": false,
   "required": [

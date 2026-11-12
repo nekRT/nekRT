@@ -1,9 +1,8 @@
 /*
- * Kingfisher customization for Doxygen Awesome.
+ * nekRT customization for Doxygen Awesome.
  *
  * Loaded after doxygen-awesome.css and built on its CSS variables. The
- * palette is taken from docs/logo/logo_kingfisher.svg and matches
- * docs/source/_static/css/kingfisher.css:
+ * palette matches docs/source/_static/css/nekrt.css:
  *
  *   teal    #005D82
  *   navy    #04364A
@@ -135,12 +134,6 @@ html.dark-mode {
 
 #projectbrief {
   opacity: 0.88;
-}
-
-/* The logo has black linework, so give it a light disc in dark mode. */
-#projectlogo img {
-  background: #FFFFFF;
-  border-radius: 50%;
 }
 
 /* -- Typography ----------------------------------------------------------- */

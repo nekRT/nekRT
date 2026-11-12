@@ -1,7 +1,7 @@
 name: Claude Code Review
 
 # Reviews every pull request once, when it is opened or marked ready for
-# review, using the reviewing-kingfisher-code skill. To review again after new
+# review, using the reviewing-nekrt-code skill. To review again after new
 # commits, comment "@claude review" on the PR (see claude.yml).
 
 on:
@@ -35,7 +35,7 @@ jobs:
             BASE BRANCH: ${{ github.event.pull_request.base.ref }}
 
             Read CLAUDE.md, AGENTS.md, and
-            .claude/skills/reviewing-kingfisher-code/SKILL.md, then review this
+            .claude/skills/reviewing-nekrt-code/SKILL.md, then review this
             pull request by following that skill. Get the changes with
             `gh pr diff` and `gh pr view`, not `git diff`: the repository is a
             shallow checkout of the PR's merge commit, there for reading the

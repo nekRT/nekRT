@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BSD-3-Clause
-// Copyright (c) 2026, kingfisher-project
+// Copyright (c) 2026, nekRT
 
 #include "utils/input_parameters.h"
 
@@ -14,7 +14,7 @@
 
 #include "utils/errors.h"
 
-namespace kingfisher {
+namespace nekrt {
 
 // A complete two-group input.
 constexpr char kValidYaml[] = R"(version: 0
@@ -517,4 +517,4 @@ TEST(InputChecks, NonFiniteToleranceThrows) {
   EXPECT_THROW(CheckSolverParams(solver), Error);
 }
 
-}  // namespace kingfisher
+}  // namespace nekrt
