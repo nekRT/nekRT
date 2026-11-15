@@ -38,6 +38,9 @@ struct Simulation {
 
   /// @brief Boundaries in simulation.
   std::vector<BoundaryType> boundaries;
+
+  /// @brief Number of energy groups in simulation.
+  int n_energy_groups;
 };
 
 }  // namespace nekrt
