@@ -17,7 +17,8 @@ namespace {
 Material MakeIndexedMaterial(const int n_moments, const int n_groups) {
   Material material;
   material.n_legendre_moments = n_moments;
-  material.scatter_moments.resize(n_moments * n_groups * n_groups);
+  material.scatter_moments.resize(static_cast<size_t>(n_moments) * n_groups *
+                                  n_groups);
   std::iota(material.scatter_moments.begin(), material.scatter_moments.end(),
             0.0);
   return material;
