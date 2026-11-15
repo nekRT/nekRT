@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2026, nekRT
 
-#ifndef NEKRT_REGION_H_
-#define NEKRT_REGION_H_
+#ifndef NEKRT_REGION_REGION_H_
+#define NEKRT_REGION_REGION_H_
 
 namespace nekrt {
 
@@ -21,4 +21,4 @@ struct Region {
 
 }  // namespace nekrt
 
-#endif  // NEKRT_REGION_H_
+#endif  // NEKRT_REGION_REGION_H_
