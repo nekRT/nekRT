@@ -5,6 +5,10 @@
 
 namespace nekrt {
 
+/**
+ * @brief Struct to hold material information such as cross sections.
+ *
+ */
 struct Material {
   /// @brief Material ID
   int id;
