@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "materials/material.h"
-#include "region.h"
+#include "regions/region.h"
 #include "sources/source.h"
 #include "utils/enums.h"
 
