@@ -13,9 +13,6 @@ namespace nekrt {
  *
  */
 struct Material {
-  /// @brief Material ID
-  int id;
-
   /// @brief Group-wise total cross sections in 1/cm
   std::vector<double> total_xs;
 

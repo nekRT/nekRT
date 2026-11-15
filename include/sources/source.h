@@ -13,9 +13,6 @@ namespace nekrt {
  *
  */
 struct Source {
-  /// @brief Source ID.
-  int id;
-
   /// @brief Type of source.
   SourceType type;
 };
