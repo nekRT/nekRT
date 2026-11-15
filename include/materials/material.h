@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2026, nekRT
 
+#ifndef NEKRT_MATERIALS_MATERIAL_H_
+#define NEKRT_MATERIALS_MATERIAL_H_
+
 #include <vector>
 
 namespace nekrt {
@@ -48,3 +51,5 @@ inline double GetScatterMoment(const int moment_number,
 }
 
 }  // namespace nekrt
+
+#endif  // NEKRT_MATERIALS_MATERIAL_H_

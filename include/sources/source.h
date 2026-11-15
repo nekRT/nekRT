@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2026, nekRT
 
+#ifndef NEKRT_SOURCES_SOURCE_H_
+#define NEKRT_SOURCES_SOURCE_H_
+
 #include "utils/enums.h"
 
 namespace nekrt {
@@ -17,3 +20,5 @@ struct Source {
   SourceType type;
 };
 }  // namespace nekrt
+
+#endif  // NEKRT_SOURCES_SOURCE_H_
