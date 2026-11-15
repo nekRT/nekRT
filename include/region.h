@@ -13,10 +13,10 @@ namespace nekrt {
  */
 struct Region {
   /// @brief Material ID
-  int material_id;
+  int material_id = -1;
 
   /// @brief Source ID
-  int source_id = 0;
+  int source_id = -1;
 };
 
 }  // namespace nekrt
