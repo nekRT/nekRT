@@ -43,6 +43,9 @@ jobs:
           style: file
           tidy-checks: '' # use .clang-tidy
           database: build/debug
+          # Headers have no entry in compile_commands.json, so clang-tidy needs
+          # the include root to resolve "materials/material.h" and friends.
+          extra-args: '-Iinclude'
           ignore: 'build|.cpm-cache'
           files-changed-only: true
           version: '18' # clang-format and clang-tidy version; keep in sync with style.md
