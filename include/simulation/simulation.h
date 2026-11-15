@@ -9,6 +9,7 @@
 #include "materials/material.h"
 #include "region.h"
 #include "sources/source.h"
+#include "utils/enums.h"
 
 namespace nekrt {
 
@@ -34,6 +35,9 @@ struct Simulation {
    *
    */
   std::vector<Region> regions;
+
+  /// @brief Boundaries in simulation.
+  std::vector<BoundaryType> boundaries;
 };
 
 }  // namespace nekrt
