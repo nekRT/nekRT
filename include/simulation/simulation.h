@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "materials/material.h"
+#include "region.h"
 #include "sources/source.h"
 
 namespace nekrt {
@@ -23,10 +24,16 @@ struct Simulation {
   std::vector<Material> materials;
 
   /**
-   * @brief Sources in simulation
+   * @brief Sources in simulation.
    *
    */
   std::vector<Source> sources;
+
+  /**
+   * @brief Regions in simulation.
+   *
+   */
+  std::vector<Region> regions;
 };
 
 }  // namespace nekrt
