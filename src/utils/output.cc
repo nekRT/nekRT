@@ -201,8 +201,7 @@ std::string FormatHeader(const RunInfo& run_info) {
   header += '\n';
   header += Indent(kWordmark, kArtIndent);
   header += '\n';
-  header +=
-      FormatField("Description", "Spectral Elements for Radiation Transport");
+  header += FormatField("", "Spectral Elements for Radiation Transport");
   header += FormatField("Copyright", "2026, nekRT");
   header += FormatField("License",
                         "https://github.com/nekRT/nekRT/blob/main/LICENSE");
