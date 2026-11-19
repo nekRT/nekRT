@@ -16,6 +16,7 @@ add_library(
 	sources/source.cc
 	regions/region.cc
 	bcs/boundary.cc
+	mesh/attributes.cc
 )
 
 target_compile_features(nekrt_lib PUBLIC cxx_std_20)
