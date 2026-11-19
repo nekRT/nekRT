@@ -2,6 +2,7 @@
 // Copyright (c) 2026, nekRT
 
 #include <iostream>
+#include <mfem.hpp>
 #include <string>
 
 #include "utils/errors.h"
@@ -27,8 +28,11 @@ int main(int argc, char** argv) {
 
   nekrt::PrintProblem(input_filename, input_params);
 
-  // The eigenvalue columns are for an eigenvalue run mode, which RunMode does
-  // not have yet.
+  // load mesh
+  mfem::Mesh(input_params.mesh_params.filename);
+
+  // The eigenvalue columns are for an eigenvalue run mode, which RunMode
+  // does not have yet.
   nekrt::PrintSourceIterationColumns(/*include_eigenvalue=*/false);
 
   return 0;
