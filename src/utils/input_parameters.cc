@@ -6,6 +6,7 @@
 #include <array>
 #include <cmath>
 #include <cstddef>
+#include <filesystem>
 #include <fstream>
 #include <initializer_list>
 #include <iterator>
@@ -360,7 +361,12 @@ InputParameters ReadInputFile(const std::string& filename) {
                        std::istreambuf_iterator<char>());
 
   try {
-    return ParseInputString(std::move(contents));
+    InputParameters input_params = ParseInputString(std::move(contents));
+    std::filesystem::path path(filename);
+    std::string full_mesh_path =
+        path.parent_path().string() + "/" + input_params.mesh_params.filename;
+    input_params.mesh_params.filename = full_mesh_path;
+    return input_params;
   } catch (const Error& e) {
     throw Error(filename + ": " + e.what());
   }
