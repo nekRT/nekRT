@@ -77,7 +77,10 @@ std::string FormatProblem(std::string_view input,
 std::string FormatMeshInfo(std::size_t n_nodes, std::size_t n_elements,
                            unsigned int dimension);
 
-/// @brief Print the startup header (see FormatHeader()) for the current run.
+/**
+ * @brief Print the startup header (see FormatHeader()) for the current run.
+ *
+ */
 void PrintHeader();
 
 /**
@@ -98,7 +101,10 @@ void PrintProblem(std::string_view input, const InputParameters& input_params);
 void PrintMeshInfo(std::size_t n_nodes, std::size_t n_elements,
                    unsigned int dimension);
 
-/// @brief Print the column headings of the source iteration table.
+/**
+ * @brief Print the column headings of the source iteration table.
+ *
+ */
 void PrintSourceIterationColumns();
 
 }  // namespace nekrt

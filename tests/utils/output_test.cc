@@ -51,6 +51,16 @@ TEST(UtilsOutput, FormatHeaderLinesArePlainAscii) {
   }
 }
 
+TEST(UtilsOutput, FormatHeaderCentersLogo) {
+  const std::string header = FormatHeader({"2026-01-01 00:00:00", "host"});
+  // The top of the logo, "@==@", should sit in the middle of the line.
+  const std::size_t peak = header.find("@==@");
+  ASSERT_NE(peak, std::string::npos);
+  const std::size_t line_start = header.rfind('\n', peak) + 1;
+  const std::size_t center = peak - line_start + 2;
+  EXPECT_EQ(center, static_cast<std::size_t>(kLineWidth / 2));
+}
+
 TEST(UtilsOutput, FormatHeaderContainsBuildAndRunInfo) {
   const std::string header = FormatHeader({"2026-01-01 00:00:00", "host"});
   EXPECT_NE(header.find(FormatField("Version", kVersion)), std::string::npos);

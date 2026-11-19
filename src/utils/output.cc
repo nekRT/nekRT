@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include <array>
+#include <cstddef>
 #include <ctime>
 #include <mfem.hpp>
 #include <string>
@@ -18,8 +19,12 @@
 namespace nekrt {
 namespace {
 
-// Kept pure ASCII so the header displays correctly in any log file or locale.
+// The logo and wordmark are drawn centered in a frame kArtWidth columns wide,
+// and are kept pure ASCII so they display correctly in any log file or locale.
+constexpr int kArtWidth = 54;
+
 constexpr std::string_view kLogo =
+    "\n\n"
     "                         @==@\n"
     "                        @====@\n"
     "                        ++++++\n"
@@ -43,7 +48,23 @@ constexpr std::string_view kWordmark =
     "       ###  ## ##   ## ## ##   #######      ##\n"
     "       ##   ## ####### ####    ##  ##       ##\n"
     "       ##   ## ##      ## ##   ##   ##      ##\n"
-    "       ##   ##  #####  ##  ##  ##    ##     ##\n";
+    "       ##   ##  #####  ##  ##  ##    ##     ##\n\n";
+
+// Indent every non-empty line of `block` by `n` spaces. Empty lines stay
+// empty, so no trailing whitespace is added.
+std::string Indent(std::string_view block, const int n) {
+  const std::string padding(static_cast<std::size_t>(n), ' ');
+  std::string indented;
+  bool at_line_start = true;
+  for (const char c : block) {
+    if (at_line_start && c != '\n') {
+      indented += padding;
+    }
+    indented += c;
+    at_line_start = (c == '\n');
+  }
+  return indented;
+}
 
 std::string CurrentDateTime() {
   const std::time_t now = std::time(nullptr);
@@ -77,9 +98,11 @@ std::string FormatBanner(std::string_view title) {
 
 std::string FormatHeader(const RunInfo& run_info) {
   std::string header;
-  header += kLogo;
+  // Center the art on the full line width.
+  constexpr int kArtIndent = (kLineWidth - kArtWidth) / 2;
+  header += Indent(kLogo, kArtIndent);
   header += '\n';
-  header += kWordmark;
+  header += Indent(kWordmark, kArtIndent);
   header += '\n';
   header += FormatField("", "Spectral Elements for Radiation Transport");
   header += FormatField("Copyright", "2026, nekRT");
