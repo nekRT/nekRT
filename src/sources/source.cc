@@ -18,4 +18,16 @@ std::vector<Source> BuildSources(
   }
   return sources;
 }
+
+std::unordered_map<std::string, int> CreateSourceIDMap(
+    const std::vector<SourceParams>& source_params) {
+  std::unordered_map<std::string, int> source_id_map;
+
+  int count = 0;
+  for (const auto& params : source_params) {
+    source_id_map[params.name] = count;
+    count++
+  }
+  return source_id_map;
+}
 }  // namespace nekrt

@@ -41,6 +41,9 @@ int main(int argc, char** argv) {
   std::vector<nekrt::Source> sources =
       nekrt::BuildSources(input_params.sources);
 
+  std::unordered_map<std::string, int> source_id_map =
+      nekrt::CreateSourceIDMap(input_params.sources);
+
   // load mesh
   mfem::Mesh mesh(input_params.mesh_params.filename);
 
