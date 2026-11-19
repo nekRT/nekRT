@@ -12,6 +12,8 @@ add_library(
 	utils/input_parameters.cc
 	utils/legendre_polynomials.cc
 	utils/output.cc
+	materials/material.cc
+	sources/source.cc
 )
 
 target_compile_features(nekrt_lib PUBLIC cxx_std_20)
