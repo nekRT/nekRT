@@ -8,6 +8,7 @@
 
 #include "utils/errors.h"
 #include "utils/input_parameters.h"
+#include "utils/output.h"
 
 int main(int argc, char** argv) {
   if (argc < 2) {
@@ -15,16 +16,18 @@ int main(int argc, char** argv) {
     return 1;
   }
 
+  nekrt::PrintHeader();
+
+  nekrt::InputParameters input_params;
   const std::string input_filename = argv[1];
   try {
-    fmt::print("Loading {} input file...\n", input_filename);
-    const nekrt::InputParameters input_params =
-        nekrt::ReadInputFile(input_filename);
-    fmt::print("Done. Problem: {}\n", input_params.problem_params.name);
+    input_params = nekrt::ReadInputFile(input_filename);
   } catch (const nekrt::Error& e) {
     std::cerr << "Error: " << e.what() << '\n';
     return 1;
   }
+
+  nekrt::PrintProblem(input_filename, input_params);
 
   return 0;
 }
