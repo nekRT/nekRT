@@ -14,6 +14,7 @@ add_library(
 	utils/output.cc
 	materials/material.cc
 	sources/source.cc
+	regions/region.cc
 )
 
 target_compile_features(nekrt_lib PUBLIC cxx_std_20)

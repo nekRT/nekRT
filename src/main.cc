@@ -6,6 +6,7 @@
 #include <string>
 
 #include "materials/material.h"
+#include "regions/region.h"
 #include "sources/source.h"
 #include "utils/errors.h"
 #include "utils/input_parameters.h"
@@ -43,6 +44,9 @@ int main(int argc, char** argv) {
 
   std::unordered_map<std::string, int> source_id_map =
       nekrt::CreateSourceIDMap(input_params.sources);
+
+  std::vector<nekrt::Region> regions =
+      nekrt::BuildRegions(input_params.regions, material_id_map, source_id_map);
 
   // load mesh
   mfem::Mesh mesh(input_params.mesh_params.filename);
