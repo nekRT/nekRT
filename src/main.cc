@@ -29,5 +29,9 @@ int main(int argc, char** argv) {
 
   nekrt::PrintProblem(input_filename, input_params);
 
+  // The eigenvalue columns are for an eigenvalue run mode, which RunMode does
+  // not have yet.
+  nekrt::PrintSourceIterationColumns(/*include_eigenvalue=*/false);
+
   return 0;
 }

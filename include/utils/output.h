@@ -101,11 +101,75 @@ void PrintProblem(std::string_view input, const InputParameters& input_params);
 void PrintMeshInfo(std::size_t n_nodes, std::size_t n_elements,
                    unsigned int dimension);
 
+/// One scattering (inner) iteration, printed as a source iteration table row.
+struct ScatterIterationRow {
+  unsigned int iteration = 0;   ///< Scattering iteration number.
+  double flux_error = 0.0;      ///< Change in scalar flux since last iteration.
+  double relative_error = 0.0;  ///< flux_error relative to the scalar flux.
+};
+
+/// One power (outer) iteration, printed in the eigenvalue columns of a row.
+struct EigenvalueIterationRow {
+  unsigned int iteration = 0;  ///< Power iteration number.
+  double k_eff = 0.0;          ///< Current estimate of k-eff.
+  double k_eff_error = 0.0;    ///< Change in k-eff since last iteration.
+};
+
 /**
- * @brief Print the column headings of the source iteration table.
+ * @brief Format the source iteration section banner and table column headings.
  *
+ * The scattering columns are always shown. The eigenvalue (power iteration)
+ * columns are shown to their left when `include_eigenvalue` is true. With
+ * both, every line is kLineWidth wide.
+ *
+ * @param include_eigenvalue Whether to include the eigenvalue columns.
+ * @return Formatted banner and headings.
  */
-void PrintSourceIterationColumns();
+std::string FormatSourceIterationColumns(bool include_eigenvalue);
+
+/**
+ * @brief Format a row of the fixed-source iteration table, aligned with
+ * FormatSourceIterationColumns(false).
+ *
+ * @param scatter Scattering iteration to print.
+ * @return Formatted row, ending in a newline.
+ */
+std::string FormatSourceIterationRow(const ScatterIterationRow& scatter);
+
+/**
+ * @brief Format a row of the eigenvalue iteration table, aligned with
+ * FormatSourceIterationColumns(true).
+ *
+ * @param eigenvalue Power iteration to print.
+ * @param scatter Scattering iteration to print.
+ * @return Formatted row, ending in a newline.
+ */
+std::string FormatSourceIterationRow(const EigenvalueIterationRow& eigenvalue,
+                                     const ScatterIterationRow& scatter);
+
+/**
+ * @brief Print the source iteration banner and table column headings (see
+ * FormatSourceIterationColumns()).
+ *
+ * @param include_eigenvalue Whether to include the eigenvalue columns.
+ */
+void PrintSourceIterationColumns(bool include_eigenvalue);
+
+/**
+ * @brief Print a row of the fixed-source iteration table.
+ *
+ * @param scatter Scattering iteration to print.
+ */
+void PrintSourceIterationRow(const ScatterIterationRow& scatter);
+
+/**
+ * @brief Print a row of the eigenvalue iteration table.
+ *
+ * @param eigenvalue Power iteration to print.
+ * @param scatter Scattering iteration to print.
+ */
+void PrintSourceIterationRow(const EigenvalueIterationRow& eigenvalue,
+                             const ScatterIterationRow& scatter);
 
 }  // namespace nekrt
 

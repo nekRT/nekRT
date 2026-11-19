@@ -13,6 +13,7 @@
 #include <mfem.hpp>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "utils/build_info.h"
 
@@ -81,6 +82,102 @@ std::string Hostname() {
     return "unknown";
   }
   return {buffer.data()};
+}
+
+// Source iteration table layout. Each group of columns is
+// kTableGroupWidth wide, so a row with both groups is
+// " " + group + " | " + group = kLineWidth wide.
+struct TableColumn {
+  std::string_view name;
+  int width;
+};
+
+struct TableGroup {
+  std::string_view title;
+  std::array<TableColumn, 3> columns;
+};
+
+constexpr std::string_view kColumnGap = "  ";
+constexpr std::string_view kGroupSeparator = " | ";
+constexpr int kIterationWidth = 8;
+constexpr int kValueWidth = 13;
+
+constexpr TableGroup kEigenvalueGroup{"Power Iteration",
+                                      {{{"Iter.", kIterationWidth},
+                                        {"k-eff", kValueWidth},
+                                        {"k-eff Error", kValueWidth}}}};
+
+constexpr TableGroup kScatterGroup{"Scattering Iteration",
+                                   {{{"Iter.", kIterationWidth},
+                                     {"Flux Error", kValueWidth},
+                                     {"Relative Err.", kValueWidth}}}};
+
+constexpr int GroupWidth(const TableGroup& group) {
+  int width = static_cast<int>(kColumnGap.size()) *
+              static_cast<int>(group.columns.size() - 1);
+  for (const TableColumn& column : group.columns) {
+    width += column.width;
+  }
+  return width;
+}
+
+constexpr int kTableGroupWidth = GroupWidth(kScatterGroup);
+static_assert(GroupWidth(kEigenvalueGroup) == kTableGroupWidth);
+static_assert(1 + 2 * kTableGroupWidth +
+                  static_cast<int>(kGroupSeparator.size()) ==
+              kLineWidth);
+
+// The three heading lines of one column group, each kTableGroupWidth wide.
+struct GroupHeader {
+  std::string title;
+  std::string names;
+  std::string underline;
+};
+
+GroupHeader FormatGroupHeader(const TableGroup& group) {
+  GroupHeader header;
+  header.title = fmt::format("{:^{}}", group.title, kTableGroupWidth);
+  for (std::size_t i = 0; i < group.columns.size(); ++i) {
+    const TableColumn& column = group.columns[i];
+    if (i > 0) {
+      header.names += kColumnGap;
+      header.underline += kColumnGap;
+    }
+    header.names += fmt::format("{:>{}}", column.name, column.width);
+    header.underline +=
+        std::string(static_cast<std::size_t>(column.width), '=');
+  }
+  return header;
+}
+
+std::string FormatEigenvalueCells(const EigenvalueIterationRow& row) {
+  const auto& columns = kEigenvalueGroup.columns;
+  return fmt::format("{:>{}}{}{:>{}.8f}{}{:>{}.6e}", row.iteration,
+                     columns[0].width, kColumnGap, row.k_eff, columns[1].width,
+                     kColumnGap, row.k_eff_error, columns[2].width);
+}
+
+std::string FormatScatterCells(const ScatterIterationRow& row) {
+  const auto& columns = kScatterGroup.columns;
+  return fmt::format("{:>{}}{}{:>{}.6e}{}{:>{}.6e}", row.iteration,
+                     columns[0].width, kColumnGap, row.flux_error,
+                     columns[1].width, kColumnGap, row.relative_error,
+                     columns[2].width);
+}
+
+// Join the column groups of one line with kGroupSeparator, indent by one
+// space to match FormatBanner(), and strip trailing whitespace.
+std::string JoinGroups(const std::vector<std::string>& groups) {
+  std::string line = " ";
+  for (std::size_t i = 0; i < groups.size(); ++i) {
+    if (i > 0) {
+      line += kGroupSeparator;
+    }
+    line += groups[i];
+  }
+  line.erase(line.find_last_not_of(' ') + 1);
+  line += '\n';
+  return line;
 }
 
 }  // namespace
@@ -154,12 +251,50 @@ void PrintMeshInfo(const std::size_t n_nodes, const std::size_t n_elements,
   fmt::print("{}", FormatMeshInfo(n_nodes, n_elements, dimension));
 }
 
-void PrintSourceIterationColumns() {
-  fmt::print(
-      "   k-eff Iter.       k-eff       k-eff Error  | Scatter Iter.   "
-      "Flux Error     Relative Err.\n"
-      "  =============  =============  ============= | =============  "
-      "=============  =============\n");
+std::string FormatSourceIterationColumns(const bool include_eigenvalue) {
+  std::string section = FormatBanner("SOURCE ITERATION");
+  section += '\n';
+  std::vector<GroupHeader> groups;
+  if (include_eigenvalue) {
+    groups.push_back(FormatGroupHeader(kEigenvalueGroup));
+  }
+  groups.push_back(FormatGroupHeader(kScatterGroup));
+
+  std::vector<std::string> titles;
+  std::vector<std::string> names;
+  std::vector<std::string> underlines;
+  for (const GroupHeader& group : groups) {
+    titles.push_back(group.title);
+    names.push_back(group.names);
+    underlines.push_back(group.underline);
+  }
+  section += JoinGroups(titles);
+  section += JoinGroups(names);
+  section += JoinGroups(underlines);
+  return section;
+}
+
+std::string FormatSourceIterationRow(const ScatterIterationRow& scatter) {
+  return JoinGroups({FormatScatterCells(scatter)});
+}
+
+std::string FormatSourceIterationRow(const EigenvalueIterationRow& eigenvalue,
+                                     const ScatterIterationRow& scatter) {
+  return JoinGroups(
+      {FormatEigenvalueCells(eigenvalue), FormatScatterCells(scatter)});
+}
+
+void PrintSourceIterationColumns(const bool include_eigenvalue) {
+  fmt::print("{}", FormatSourceIterationColumns(include_eigenvalue));
+}
+
+void PrintSourceIterationRow(const ScatterIterationRow& scatter) {
+  fmt::print("{}", FormatSourceIterationRow(scatter));
+}
+
+void PrintSourceIterationRow(const EigenvalueIterationRow& eigenvalue,
+                             const ScatterIterationRow& scatter) {
+  fmt::print("{}", FormatSourceIterationRow(eigenvalue, scatter));
 }
 
 }  // namespace nekrt
