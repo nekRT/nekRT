@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
   nekrt::PrintProblem(input_filename, input_params);
 
   // load mesh
-  mfem::Mesh(input_params.mesh_params.filename);
+  mfem::Mesh mesh(input_params.mesh_params.filename);
 
   // The eigenvalue columns are for an eigenvalue run mode, which RunMode
   // does not have yet.
