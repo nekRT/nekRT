@@ -4,6 +4,7 @@
 #ifndef NEKRT_MATERIALS_MATERIAL_H_
 #define NEKRT_MATERIALS_MATERIAL_H_
 
+#include <unordered_map>
 #include <vector>
 
 #include "utils/input_parameters.h"
@@ -60,6 +61,16 @@ inline double GetScatterMoment(const int moment_number,
  * section generation.
  */
 std::vector<Material> BuildMaterials(
+    const std::vector<MaterialParams>& material_params);
+
+/**
+ * @brief Create a Material ID Map to link a material name to its ID (location
+ * in the global material vector)
+ *
+ * @param material_params User material parameters
+ * @return std::unordered_map<std::string, int>
+ */
+std::unordered_map<std::string, int> CreateMaterialIDMap(
     const std::vector<MaterialParams>& material_params);
 
 }  // namespace nekrt

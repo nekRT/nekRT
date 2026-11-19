@@ -19,4 +19,16 @@ std::vector<Material> BuildMaterials(
   }
   return materials;
 }
+
+std::unordered_map<std::string, int> CreateMaterialIDMap(
+    const std::vector<MaterialParams>& material_params) {
+  std::unordered_map<std::string, int> material_id_map;
+
+  int count = 0;
+  for (const auto& params : material_params) {
+    material_id_map[params.name] = count;
+    count++;
+  }
+  return material_id_map;
+}
 }  // namespace nekrt

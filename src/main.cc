@@ -34,6 +34,9 @@ int main(int argc, char** argv) {
   std::vector<nekrt::Material> materials =
       nekrt::BuildMaterials(input_params.materials);
 
+  std::unordered_map<std::string, int> material_id_map =
+      nekrt::CreateMaterialIDMap(input_params.materials);
+
   // create sources
   std::vector<nekrt::Source> sources =
       nekrt::BuildSources(input_params.sources);
