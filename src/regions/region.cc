@@ -21,4 +21,16 @@ std::vector<Region> BuildRegions(
   }
   return regions;
 }
+
+std::unordered_map<std::string, int> CreateRegionIDMap(
+    const std::vector<RegionParams> region_params) {
+  std::unordered_map<std::string, int> region_id_map;
+
+  int count = 0;
+  for (const auto& params : region_params) {
+    region_id_map[params.name] = count;
+    count++;
+  }
+  return region_id_map;
+}
 }  // namespace nekrt

@@ -47,6 +47,8 @@ int main(int argc, char** argv) {
 
   std::vector<nekrt::Region> regions =
       nekrt::BuildRegions(input_params.regions, material_id_map, source_id_map);
+  std::unordered_map<std::string, int> region_id_map =
+      nekrt::CreateRegionIDMap(input_params.regions);
 
   // load mesh
   mfem::Mesh mesh(input_params.mesh_params.filename);
