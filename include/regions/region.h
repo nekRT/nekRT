@@ -58,6 +58,19 @@ mfem::Array<int> AttributeToRegionIndex(
     const std::unordered_map<std::string, int>& region_id_map,
     const mfem::Mesh& mesh);
 
+/**
+ * @brief Creates an array mapping the element number to the region ID that it
+ * contains. For an element number `e`, we can get the Region struct by called
+ * `element_regions[e]`.
+ *
+ * @param region_id_map Map from a region name to its ID
+ * @param mesh Mesh
+ * @return mfem::Array<int>
+ */
+mfem::Array<int> CreateElementRegions(
+    const std::unordered_map<std::string, int>& region_id_map,
+    const mfem::Mesh& mesh);
+
 }  // namespace nekrt
 
 #endif  // NEKRT_REGIONS_REGION_H_

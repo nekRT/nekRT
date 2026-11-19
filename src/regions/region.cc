@@ -65,4 +65,15 @@ mfem::Array<int> AttributeToRegionIndex(
   }
   return attribute_to_region;
 }
+
+mfem::Array<int> CreateElementRegions(
+    const std::unordered_map<std::string, int>& region_id_map,
+    const mfem::Mesh& mesh) {
+  auto attribute_to_region = AttributeToRegionIndex(region_id_map, mesh);
+  mfem::Array<int> element_regions(mesh.GetNE());
+  element_regions = -1;
+  for (auto e = 0; e < mesh.GetNE(); e++)
+    element_regions[e] = attribute_to_region[mesh.GetAttribute(e)];
+  return element_regions;
+}
 }  // namespace nekrt

@@ -53,6 +53,9 @@ int main(int argc, char** argv) {
   // load mesh
   mfem::Mesh mesh(input_params.mesh_params.filename);
 
+  mfem::Array<int> element_regions =
+      nekrt::CreateElementRegions(region_id_map, mesh);
+
   // The eigenvalue columns are for an eigenvalue run mode, which RunMode
   // does not have yet.
   nekrt::PrintSourceIterationColumns(/*include_eigenvalue=*/false);
