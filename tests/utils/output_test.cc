@@ -7,11 +7,13 @@
 
 #include <cstddef>
 #include <mfem.hpp>
+#include <regex>
 #include <sstream>
 #include <string>
 #include <vector>
 
 #include "utils/build_info.h"
+#include "utils/input_parameters.h"
 
 namespace nekrt {
 namespace {
@@ -28,6 +30,13 @@ std::vector<std::string> Lines(const std::string& text) {
     lines.push_back(line);
   }
   return lines;
+}
+
+InputParameters LathropParams() {
+  InputParameters params;
+  params.problem_params.name = "lathrop";
+  params.mesh_params.filename = "lathrop.msh";
+  return params;
 }
 
 }  // namespace
@@ -95,18 +104,22 @@ TEST(UtilsOutput, FormatMeshInfo) {
 TEST(UtilsOutput, SourceIterationColumnsWithEigenvalue) {
   const std::vector<std::string> lines =
       Lines(FormatSourceIterationColumns(true));
-  ASSERT_EQ(lines.size(), 5U);  // banner, blank, titles, names, underlines
+  // banner, blank, titles, blank, names, underlines
+  ASSERT_EQ(lines.size(), 6U);
   EXPECT_EQ(lines[0] + "\n", FormatBanner("SOURCE ITERATION"));
-  const std::size_t separator = lines[4].find('|');
+  EXPECT_TRUE(lines[1].empty());
+  EXPECT_TRUE(lines[3].empty());
+  const std::size_t separator = lines[5].find('|');
   ASSERT_NE(separator, std::string::npos);
-  for (std::size_t i = 2; i < lines.size(); ++i) {
+  for (const std::size_t i : {2U, 4U, 5U}) {
     EXPECT_EQ(lines[i].find('|'), separator) << lines[i];
     EXPECT_NE(lines[i].back(), ' ') << lines[i];
   }
-  EXPECT_EQ(lines[4].size(), static_cast<std::size_t>(kLineWidth));
+  EXPECT_EQ(lines[5].size(), static_cast<std::size_t>(kLineWidth));
   EXPECT_NE(lines[2].find("Power Iteration"), std::string::npos);
-  EXPECT_NE(lines[3].find("k-eff Error"), std::string::npos);
-  EXPECT_NE(lines[3].find("Relative Err."), std::string::npos);
+  EXPECT_NE(lines[2].find("Scattering Iteration"), std::string::npos);
+  EXPECT_NE(lines[4].find("k-eff Error"), std::string::npos);
+  EXPECT_NE(lines[4].find("Relative Err."), std::string::npos);
 }
 
 TEST(UtilsOutput, SourceIterationColumnsFixedSource) {
@@ -135,6 +148,79 @@ TEST(UtilsOutput, SourceIterationRowAlignsWithColumns) {
   EXPECT_EQ(full_row.find('|'), full_underline.find('|'));
   EXPECT_NE(full_row.find("1.02345679"), std::string::npos);
   EXPECT_NE(full_row.find("-4.000000e-06"), std::string::npos);
+}
+
+TEST(UtilsOutput, FormatProblem) {
+  const std::string section = FormatProblem("lathrop.yaml", LathropParams());
+  EXPECT_EQ(section.rfind(FormatBanner("PROBLEM"), 0), 0U);
+  EXPECT_NE(section.find(FormatField("Problem", "lathrop")), std::string::npos);
+  EXPECT_NE(section.find(FormatField("Input File", "lathrop.yaml")),
+            std::string::npos);
+  EXPECT_NE(section.find(FormatField("Mesh File", "lathrop.msh")),
+            std::string::npos);
+  EXPECT_TRUE(section.ends_with("\n\n"));
+}
+
+TEST(UtilsOutput, GetRunInfoHasExpectedShape) {
+  const RunInfo run_info = GetRunInfo();
+  EXPECT_FALSE(run_info.hostname.empty());
+  // The values differ on every run, so only check their form.
+  EXPECT_TRUE(std::regex_match(
+      run_info.date_time, std::regex(R"(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})")))
+      << run_info.date_time;
+}
+
+TEST(UtilsOutput, PrintHeader) {
+  testing::internal::CaptureStdout();
+  PrintHeader();
+  const std::string printed = testing::internal::GetCapturedStdout();
+
+  // The date and time change, so compare the shape instead of the whole text.
+  EXPECT_NE(printed.find("Spectral Elements for Radiation Transport"),
+            std::string::npos);
+  EXPECT_NE(printed.find(FormatField("Version", kVersion)), std::string::npos);
+  EXPECT_TRUE(printed.ends_with('\n'));
+  EXPECT_EQ(Lines(printed).size(),
+            Lines(FormatHeader({"2026-01-01 00:00:00", "host"})).size());
+}
+
+TEST(UtilsOutput, PrintProblem) {
+  const InputParameters params = LathropParams();
+  testing::internal::CaptureStdout();
+  PrintProblem("lathrop.yaml", params);
+  EXPECT_EQ(testing::internal::GetCapturedStdout(),
+            FormatProblem("lathrop.yaml", params));
+}
+
+TEST(UtilsOutput, PrintMeshInfo) {
+  testing::internal::CaptureStdout();
+  PrintMeshInfo(10, 4, 2);
+  EXPECT_EQ(testing::internal::GetCapturedStdout(), FormatMeshInfo(10, 4, 2));
+}
+
+TEST(UtilsOutput, PrintSourceIterationColumns) {
+  for (const bool include_eigenvalue : {false, true}) {
+    testing::internal::CaptureStdout();
+    PrintSourceIterationColumns(include_eigenvalue);
+    EXPECT_EQ(testing::internal::GetCapturedStdout(),
+              FormatSourceIterationColumns(include_eigenvalue))
+        << "include_eigenvalue = " << include_eigenvalue;
+  }
+}
+
+TEST(UtilsOutput, PrintSourceIterationRow) {
+  const ScatterIterationRow scatter{12, 1.5e-5, 2.25e-7};
+  const EigenvalueIterationRow eigenvalue{3, 1.0234567891, -4.0e-6};
+
+  testing::internal::CaptureStdout();
+  PrintSourceIterationRow(scatter);
+  EXPECT_EQ(testing::internal::GetCapturedStdout(),
+            FormatSourceIterationRow(scatter));
+
+  testing::internal::CaptureStdout();
+  PrintSourceIterationRow(eigenvalue, scatter);
+  EXPECT_EQ(testing::internal::GetCapturedStdout(),
+            FormatSourceIterationRow(eigenvalue, scatter));
 }
 
 }  // namespace nekrt

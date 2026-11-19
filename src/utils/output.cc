@@ -136,7 +136,7 @@ struct GroupHeader {
 
 GroupHeader FormatGroupHeader(const TableGroup& group) {
   GroupHeader header;
-  header.title = fmt::format("{:^{}}\n", group.title, kTableGroupWidth);
+  header.title = fmt::format("{:^{}}", group.title, kTableGroupWidth);
   for (std::size_t i = 0; i < group.columns.size(); ++i) {
     const TableColumn& column = group.columns[i];
     if (i > 0) {
@@ -269,6 +269,7 @@ std::string FormatSourceIterationColumns(const bool include_eigenvalue) {
     underlines.push_back(group.underline);
   }
   section += JoinGroups(titles);
+  section += '\n';
   section += JoinGroups(names);
   section += JoinGroups(underlines);
   return section;
