@@ -10,6 +10,7 @@
 
 #include "bcs/boundary.h"
 #include "materials/material.h"
+#include "quadrature/quadrature.h"
 #include "regions/region.h"
 #include "sources/source.h"
 #include "utils/errors.h"
@@ -55,6 +56,10 @@ int main(int argc, char** argv) {
         nekrt::CreateNameIndexMap(input_params.regions), mesh);
     const mfem::Array<int> element_boundaries = nekrt::CreateElementBoundaries(
         nekrt::CreateNameIndexMap(input_params.boundaries), mesh);
+
+    // create spherical quadrature set
+    nekrt::QuadSet2D angular_quad_set =
+        nekrt::SphericalQuadSet(input_params.angular_params);
 
     // The eigenvalue columns are for an eigenvalue run mode, which RunMode
     // does not have yet.
