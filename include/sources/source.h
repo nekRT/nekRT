@@ -23,7 +23,14 @@ struct Source {
   std::vector<double> strengths;
 };
 
-std::vector<Source> BuildSources(const std::vector<SourceParams> source_params);
+/**
+ * @brief Build the vector of sources for the simulation.
+ *
+ * @param source_params Source parameters from the user.
+ * @return std::vector<Source>
+ */
+std::vector<Source> BuildSources(
+    const std::vector<SourceParams>& source_params);
 }  // namespace nekrt
 
 #endif  // NEKRT_SOURCES_SOURCE_H_

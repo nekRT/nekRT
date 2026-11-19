@@ -6,7 +6,7 @@
 namespace nekrt {
 
 std::vector<Source> BuildSources(
-    const std::vector<SourceParams> source_params) {
+    const std::vector<SourceParams>& source_params) {
   std::vector<Source> sources;
   sources.reserve(source_params.size());
 
