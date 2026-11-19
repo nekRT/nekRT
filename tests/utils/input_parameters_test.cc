@@ -38,7 +38,13 @@ materials:
 sources:
   - name: square_source
     type: volumetric
-    expression: ["1.0/4.0/pi", "0"]
+    strength: [0.25, 0]
+regions:
+  - name: fuel_region
+    material: fuel
+    source: square_source
+  - name: moderator_region
+    material: moderator
 angular:
   model: discrete_ordinates
   type: tensor_product
@@ -202,14 +208,24 @@ TEST(InputParameters, ReadsSources) {
   ASSERT_EQ(input.sources.size(), 1u);
   EXPECT_EQ(input.sources[0].name, "square_source");
   EXPECT_EQ(input.sources[0].type, SourceType::Volumetric);
-  EXPECT_EQ(input.sources[0].expression,
-            (std::vector<std::string>{"1.0/4.0/pi", "0"}));
+  EXPECT_EQ(input.sources[0].strengths, (std::vector<double>{0.25, 0.0}));
+}
+
+TEST(InputParameters, ReadsRegions) {
+  const InputParameters input = ParseInputString(kValidYaml);
+  ASSERT_EQ(input.regions.size(), 2u);
+  EXPECT_EQ(input.regions[0].name, "fuel_region");
+  EXPECT_EQ(input.regions[0].material_name, "fuel");
+  EXPECT_EQ(input.regions[0].source_name, "square_source");
+  EXPECT_EQ(input.regions[1].name, "moderator_region");
+  EXPECT_EQ(input.regions[1].material_name, "moderator");
+  EXPECT_TRUE(input.regions[1].source_name.empty());
 }
 
 TEST(InputParameters, SourcesBlockIsOptional) {
   const std::string yaml = Modified(
       "sources:\n  - name: square_source\n    type: volumetric\n"
-      "    expression: [\"1.0/4.0/pi\", \"0\"]\n",
+      "    strength: [0.25, 0]\n",
       "");
   EXPECT_TRUE(ParseInputString(yaml).sources.empty());
 }
@@ -311,8 +327,9 @@ TEST(InputParameters, ReadsLathropExample) {
   EXPECT_EQ(input.materials[0].total_xs, (std::vector<double>{0.75}));
   EXPECT_EQ(input.materials[0].scatter_moments, (std::vector<double>{0.5}));
   ASSERT_EQ(input.sources.size(), 1u);
-  EXPECT_EQ(input.sources[0].expression,
-            (std::vector<std::string>{"1.0/4.0/pi"}));
+  ASSERT_EQ(input.sources[0].strengths.size(), 1u);
+  EXPECT_DOUBLE_EQ(input.sources[0].strengths[0],
+                   1.0 / (4.0 * std::numbers::pi));
   EXPECT_EQ(input.angular_params.polar_quad_set.n_points, 4u);
   EXPECT_EQ(input.angular_params.azimuthal_quad_set.n_points, 4u);
   EXPECT_EQ(input.spatial_params.nodes_per_axis, 3u);
@@ -362,10 +379,10 @@ TEST(InputChecks, DuplicateMaterialNameThrows) {
 
 TEST(InputChecks, DuplicateSourceNameThrows) {
   ExpectParseErrorContains(
-      Modified("    expression: [\"1.0/4.0/pi\", \"0\"]\n",
-               "    expression: [\"1.0/4.0/pi\", \"0\"]\n"
+      Modified("    strength: [0.25, 0]\n",
+               "    strength: [0.25, 0]\n"
                "  - name: square_source\n    type: volumetric\n"
-               "    expression: [\"1\", \"1\"]\n"),
+               "    strength: [1, 1]\n"),
       {"Duplicate name 'square_source'", "sources"});
 }
 
@@ -401,18 +418,16 @@ TEST(InputChecks, MaterialsMustHaveTheSameNumberOfGroups) {
       {"Material 'moderator'", "same number of groups"});
 }
 
-TEST(InputChecks, SourceExpressionCountMustMatchGroups) {
+TEST(InputChecks, SourceStrengthCountMustMatchGroups) {
   ExpectParseErrorContains(
-      Modified("expression: [\"1.0/4.0/pi\", \"0\"]",
-               "expression: [\"1.0/4.0/pi\"]"),
-      {"Source 'square_source'", "1 expressions", "2 energy groups"});
+      Modified("strength: [0.25, 0]", "strength: [0.25]"),
+      {"Source 'square_source'", "1 strengths", "2 energy groups"});
 }
 
-TEST(InputChecks, EmptySourceExpressionThrows) {
+TEST(InputChecks, NegativeSourceStrengthThrows) {
   ExpectParseErrorContains(
-      Modified("expression: [\"1.0/4.0/pi\", \"0\"]",
-               "expression: [\"1.0/4.0/pi\", \"\"]"),
-      {"Source 'square_source'", "expression[1] must not be empty"});
+      Modified("strength: [0.25, 0]", "strength: [0.25, -1]"),
+      {"Source 'square_source'", "strength[1]", "must be finite and >= 0"});
 }
 
 TEST(InputChecks, TooFewNodesPerAxisThrows) {
@@ -490,12 +505,21 @@ TEST(InputChecks, EmptyListsAreValidForNamedBlocks) {
   EXPECT_NO_THROW(CheckSourceParams({}));
 }
 
-TEST(InputChecks, SourceNeedsAnExpression) {
+TEST(InputChecks, SourceNeedsAStrength) {
   SourceParams source;
   source.name = "s";
   EXPECT_THROW(CheckSourceParams({source}), Error);
-  source.expression = {"1"};
+  source.strengths = {1.0};
   EXPECT_NO_THROW(CheckSourceParams({source}));
+}
+
+TEST(InputChecks, NonFiniteSourceStrengthsThrow) {
+  SourceParams source;
+  source.name = "s";
+  source.strengths = {std::numeric_limits<double>::quiet_NaN()};
+  EXPECT_THROW(CheckSourceParams({source}), Error);
+  source.strengths = {std::numeric_limits<double>::infinity()};
+  EXPECT_THROW(CheckSourceParams({source}), Error);
 }
 
 TEST(InputChecks, SpatialNodesPerAxisBoundary) {

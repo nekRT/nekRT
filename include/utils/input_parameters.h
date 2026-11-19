@@ -229,7 +229,7 @@ InputParameters ReadInputFile(const std::string& filename);
  * InputParameters by hand.
  *
  * Checks each block (see the Check*Params() functions below), then checks that
- * every source has one expression for each energy group of the materials.
+ * every source has one strength for each energy group of the materials.
  *
  * @param input_parameters The parameters to check.
  * @throws Error If any value is invalid. The message names the offending block
@@ -266,8 +266,9 @@ void CheckMaterialParams(const std::vector<MaterialParams>& material_params);
  * @brief Checks the `sources` entries.
  *
  * Names must be valid and unique (see CheckBoundaryParams()). Each source needs
- * at least one expression and no expression may be empty. The expression count
- * is compared with the materials' group count by CheckInputParameters().
+ * at least one strength, and every strength must be finite and non-negative.
+ * The strength count is compared with the materials' group count by
+ * CheckInputParameters().
  *
  * @param source_params The sources to check.
  * @throws Error If any of the above is violated.

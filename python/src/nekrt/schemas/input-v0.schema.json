@@ -140,7 +140,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["name", "type", "expression"],
+        "required": ["name", "type", "strength"],
         "properties": {
           "name": {
             "description": "The name of the source.",
@@ -150,11 +150,11 @@
             "description": "The type of source.",
             "enum": ["volumetric"]
           },
-          "expression": {
-            "description": "Group-wise source strength expressions in terms of position. Values must be ordered from lowest energy to highest. Units in n/cm3/s/str.",
+          "strength": {
+            "description": "Group-wise isotropic source strengths. Values must be ordered from lowest energy to highest. Units in n/cm3/s/str.",
             "type": "array",
             "minItems": 1,
-            "items": { "type": "string", "minLength": 1 }
+            "items": { "type": "number", "minimum": 0 }
           }
         }
       }

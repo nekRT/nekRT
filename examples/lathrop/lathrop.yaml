@@ -25,7 +25,7 @@ materials:
 sources:
   - name: square_source
     type: volumetric
-    expression: ["1.0/4.0/pi"]
+    strength: [0.07957747154594767]
 
 regions:
   - name: square_source_region

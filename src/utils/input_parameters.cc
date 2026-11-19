@@ -313,7 +313,7 @@ void ReadSources(const ryml::ConstNodeRef& root,
     SourceParams& source = sources.emplace_back();
     Require(entry, {"name"}).load(&source.name);
     source.type = ParseEnum(Require(entry, {"type"}), kSourceTypes);
-    Require(entry, {"expression"}).load(&source.expression);
+    Require(entry, {"strength"}).load(&source.strengths);
   }
 }
 
@@ -433,18 +433,18 @@ void CheckInputParameters(const InputParameters& input_parameters) {
   CheckSpatialParams(input_parameters.spatial_params);
   CheckSolverParams(input_parameters.solver_params);
 
-  // The materials fix the number of energy groups: sources need one expression
+  // The materials fix the number of energy groups: sources need one strength
   // for each.
   if (input_parameters.materials.empty()) return;
   const std::size_t num_groups =
       input_parameters.materials.front().total_xs.size();
   for (const SourceParams& source : input_parameters.sources) {
-    NekRTError(source.expression.size() != num_groups,
+    NekRTError(source.strengths.size() != num_groups,
                "Source '" + source.name + "' has " +
-                   std::to_string(source.expression.size()) +
-                   " expressions, but the materials have " +
+                   std::to_string(source.strengths.size()) +
+                   " strengths, but the materials have " +
                    std::to_string(num_groups) +
-                   " energy groups. One expression per group is "
+                   " energy groups. One strength per group is "
                    "required.");
   }
 }
@@ -493,12 +493,11 @@ void CheckSourceParams(const std::vector<SourceParams>& source_params) {
 
   for (const SourceParams& source : source_params) {
     const std::string prefix = "Source '" + source.name + "': ";
-    NekRTError(source.expression.empty(),
-               prefix + "expression must have at least one group.");
-    for (std::size_t group = 0; group < source.expression.size(); ++group) {
-      NekRTError(source.expression[group].empty(), prefix + "expression[" +
-                                                       std::to_string(group) +
-                                                       "] must not be empty.");
+    NekRTError(source.strengths.empty(),
+               prefix + "strength must have at least one group.");
+    for (std::size_t group = 0; group < source.strengths.size(); ++group) {
+      CheckFiniteNonNegative(prefix + "strength[" + std::to_string(group) + "]",
+                             source.strengths[group]);
     }
   }
 }

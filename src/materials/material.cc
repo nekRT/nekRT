@@ -11,7 +11,8 @@ std::vector<Material> BuildMaterials(
 
   for (const auto& params : material_params) {
     Material material;
-    int n_groups = params.total_xs.size() material.total_xs = params.total_xs;
+    int n_groups = params.total_xs.size();
+    material.total_xs = params.total_xs;
     material.scatter_moments = params.scatter_moments;
     material.n_legendre_moments =
         params.scatter_moments.size() / n_groups / n_groups;

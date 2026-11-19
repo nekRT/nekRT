@@ -50,7 +50,7 @@ For example, if the mesh contains a group named `boundary_condition:reflector`, 
 The `materials` block contains the list of all available materials in the simulation.
 In addition to a unique name, each material item must hold information about its cross sections.
 Total cross section values, $\Sigma_t$, must be listed in *ascending* energy order (that is, the cross section corresponding to the lowest-energy group is listed first).
-The scattering moments and the source expressions use the same group order.
+The scattering moments and the source strengths use the same group order.
 All materials must have the same number of energy groups.
 
 The scattering cross sections are more complicated because values must be given as Legendre moments.
@@ -146,7 +146,7 @@ The checks are:
   A name starts with a lowercase letter and contains only lowercase letters, digits, and underscores.
 - Cross sections must be finite and greater than or equal to zero.
   Each material needs at least one energy group and one scattering moment, and all materials must have the same number of energy groups.
-- Each source needs exactly one expression per energy group, and no expression may be empty.
+- Each source needs exactly one strength per energy group, and every strength must be finite and greater than or equal to zero.
 - `nodes_per_axis` must be at least 2.
 - Each quadrature set needs at least one direction (`n_directions`).
 - The `tolerance` must be greater than zero, and `max_iterations` must be at least 1.
