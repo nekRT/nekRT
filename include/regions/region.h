@@ -61,7 +61,7 @@ mfem::Array<int> AttributeToRegionIndex(
 /**
  * @brief Creates an array mapping the element number to the region ID that it
  * contains. For an element number `e`, we can get the Region struct by called
- * `element_regions[e]`.
+ * `regions[element_regions[e]]`.
  *
  * @param region_id_map Map from a region name to its ID
  * @param mesh Mesh
