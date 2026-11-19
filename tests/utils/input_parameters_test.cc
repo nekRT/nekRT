@@ -38,7 +38,13 @@ materials:
 sources:
   - name: square_source
     type: volumetric
-    expression: ["1.0/4.0/pi", "0"]
+    strength: [0.25, 0]
+regions:
+  - name: fuel_region
+    material: fuel
+    source: square_source
+  - name: moderator_region
+    material: moderator
 angular:
   model: discrete_ordinates
   type: tensor_product
@@ -177,10 +183,10 @@ TEST(InputParameters, ReadsMaterialsAndFlattensScatter) {
   EXPECT_EQ(input.materials[0].name, "fuel");
   EXPECT_EQ(input.materials[0].total_xs, (std::vector<double>{0.75, 1.5}));
   // [moment][from][to] flattened row-major.
-  EXPECT_EQ(input.materials[0].scatter_matrix,
+  EXPECT_EQ(input.materials[0].scatter_moments,
             (std::vector<double>{0.1, 0.2, 0.3, 0.4}));
   EXPECT_EQ(input.materials[1].name, "moderator");
-  EXPECT_EQ(input.materials[1].scatter_matrix,
+  EXPECT_EQ(input.materials[1].scatter_moments,
             (std::vector<double>{0.5, 0.6, 0.7, 0.8}));
 }
 
@@ -202,16 +208,55 @@ TEST(InputParameters, ReadsSources) {
   ASSERT_EQ(input.sources.size(), 1u);
   EXPECT_EQ(input.sources[0].name, "square_source");
   EXPECT_EQ(input.sources[0].type, SourceType::Volumetric);
-  EXPECT_EQ(input.sources[0].expression,
-            (std::vector<std::string>{"1.0/4.0/pi", "0"}));
+  EXPECT_EQ(input.sources[0].strengths, (std::vector<double>{0.25, 0.0}));
+}
+
+TEST(InputParameters, ReadsRegions) {
+  const InputParameters input = ParseInputString(kValidYaml);
+  ASSERT_EQ(input.regions.size(), 2u);
+  EXPECT_EQ(input.regions[0].name, "fuel_region");
+  EXPECT_EQ(input.regions[0].material_name, "fuel");
+  EXPECT_EQ(input.regions[0].source_name, "square_source");
+  EXPECT_EQ(input.regions[1].name, "moderator_region");
+  EXPECT_EQ(input.regions[1].material_name, "moderator");
+  EXPECT_TRUE(input.regions[1].source_name.empty());
 }
 
 TEST(InputParameters, SourcesBlockIsOptional) {
-  const std::string yaml = Modified(
+  std::string yaml = Modified(
       "sources:\n  - name: square_source\n    type: volumetric\n"
-      "    expression: [\"1.0/4.0/pi\", \"0\"]\n",
+      "    strength: [0.25, 0]\n",
       "");
+  // Without sources, no region may name one.
+  const std::string region_source = "    source: square_source\n";
+  yaml.erase(yaml.find(region_source), region_source.size());
   EXPECT_TRUE(ParseInputString(yaml).sources.empty());
+}
+
+TEST(InputParameters, CreateNameIndexMapKeepsInputOrder) {
+  const InputParameters input = ParseInputString(kValidYaml);
+  const auto region_ids = CreateNameIndexMap(input.regions);
+  ASSERT_EQ(region_ids.size(), 2u);
+  EXPECT_EQ(region_ids.at("fuel_region"), 0);
+  EXPECT_EQ(region_ids.at("moderator_region"), 1);
+}
+
+TEST(InputParameters, ResolveMeshPathIsRelativeToInputFile) {
+  EXPECT_EQ(ResolveMeshPath("examples/lathrop/lathrop.yaml", "lathrop.msh"),
+            "examples/lathrop/lathrop.msh");
+  EXPECT_EQ(ResolveMeshPath("/runs/lathrop.yaml", "meshes/lathrop.msh"),
+            "/runs/meshes/lathrop.msh");
+}
+
+// An input file given without a directory must not resolve to the root
+// directory ("/lathrop.msh").
+TEST(InputParameters, ResolveMeshPathWithBareInputFilename) {
+  EXPECT_EQ(ResolveMeshPath("lathrop.yaml", "lathrop.msh"), "lathrop.msh");
+}
+
+TEST(InputParameters, ResolveMeshPathKeepsAbsoluteMeshPath) {
+  EXPECT_EQ(ResolveMeshPath("examples/lathrop.yaml", "/data/lathrop.msh"),
+            "/data/lathrop.msh");
 }
 
 TEST(InputParameters, UnknownEnumValueListsAvailableValues) {
@@ -289,7 +334,9 @@ TEST(InputParameters, ParseErrorLineNumberIsOneBased) {
 TEST(InputParameters, ReadsFileAndPrefixesErrorsWithFilename) {
   const std::string good = testing::TempDir() + "good.yaml";
   std::ofstream(good) << kValidYaml;
-  EXPECT_EQ(ReadInputFile(good).problem_params.name, "lathrop");
+  const InputParameters input = ReadInputFile(good);
+  EXPECT_EQ(input.problem_params.name, "lathrop");
+  EXPECT_EQ(input.mesh_params.filename, ResolveMeshPath(good, "lathrop.msh"));
 
   const std::string bad = testing::TempDir() + "bad.yaml";
   std::ofstream(bad) << "version: 0\nproblem:\n  name: x\n";
@@ -309,10 +356,11 @@ TEST(InputParameters, ReadsLathropExample) {
   EXPECT_EQ(input.boundaries.size(), 2u);
   ASSERT_EQ(input.materials.size(), 1u);
   EXPECT_EQ(input.materials[0].total_xs, (std::vector<double>{0.75}));
-  EXPECT_EQ(input.materials[0].scatter_matrix, (std::vector<double>{0.5}));
+  EXPECT_EQ(input.materials[0].scatter_moments, (std::vector<double>{0.5}));
   ASSERT_EQ(input.sources.size(), 1u);
-  EXPECT_EQ(input.sources[0].expression,
-            (std::vector<std::string>{"1.0/4.0/pi"}));
+  ASSERT_EQ(input.sources[0].strengths.size(), 1u);
+  EXPECT_DOUBLE_EQ(input.sources[0].strengths[0],
+                   1.0 / (4.0 * std::numbers::pi));
   EXPECT_EQ(input.angular_params.polar_quad_set.n_points, 4u);
   EXPECT_EQ(input.angular_params.azimuthal_quad_set.n_points, 4u);
   EXPECT_EQ(input.spatial_params.nodes_per_axis, 3u);
@@ -362,10 +410,10 @@ TEST(InputChecks, DuplicateMaterialNameThrows) {
 
 TEST(InputChecks, DuplicateSourceNameThrows) {
   ExpectParseErrorContains(
-      Modified("    expression: [\"1.0/4.0/pi\", \"0\"]\n",
-               "    expression: [\"1.0/4.0/pi\", \"0\"]\n"
+      Modified("    strength: [0.25, 0]\n",
+               "    strength: [0.25, 0]\n"
                "  - name: square_source\n    type: volumetric\n"
-               "    expression: [\"1\", \"1\"]\n"),
+               "    strength: [1, 1]\n"),
       {"Duplicate name 'square_source'", "sources"});
 }
 
@@ -401,18 +449,39 @@ TEST(InputChecks, MaterialsMustHaveTheSameNumberOfGroups) {
       {"Material 'moderator'", "same number of groups"});
 }
 
-TEST(InputChecks, SourceExpressionCountMustMatchGroups) {
+TEST(InputChecks, DuplicateRegionNameThrows) {
   ExpectParseErrorContains(
-      Modified("expression: [\"1.0/4.0/pi\", \"0\"]",
-               "expression: [\"1.0/4.0/pi\"]"),
-      {"Source 'square_source'", "1 expressions", "2 energy groups"});
+      Modified("name: moderator_region", "name: fuel_region"),
+      {"Duplicate name 'fuel_region'", "regions"});
 }
 
-TEST(InputChecks, EmptySourceExpressionThrows) {
+TEST(InputChecks, InvalidRegionNameThrows) {
+  ExpectParseErrorContains(Modified("name: fuel_region", "name: Fuel"),
+                           {"Invalid name 'Fuel'", "regions"});
+}
+
+TEST(InputChecks, RegionMaterialMustExist) {
   ExpectParseErrorContains(
-      Modified("expression: [\"1.0/4.0/pi\", \"0\"]",
-               "expression: [\"1.0/4.0/pi\", \"\"]"),
-      {"Source 'square_source'", "expression[1] must not be empty"});
+      Modified("    material: moderator\n", "    material: water\n"),
+      {"Region 'moderator_region'", "material 'water'", "not in 'materials'"});
+}
+
+TEST(InputChecks, RegionSourceMustExist) {
+  ExpectParseErrorContains(
+      Modified("source: square_source", "source: point_source"),
+      {"Region 'fuel_region'", "source 'point_source'", "not in 'sources'"});
+}
+
+TEST(InputChecks, SourceStrengthCountMustMatchGroups) {
+  ExpectParseErrorContains(
+      Modified("strength: [0.25, 0]", "strength: [0.25]"),
+      {"Source 'square_source'", "1 strengths", "2 energy groups"});
+}
+
+TEST(InputChecks, NegativeSourceStrengthThrows) {
+  ExpectParseErrorContains(
+      Modified("strength: [0.25, 0]", "strength: [0.25, -1]"),
+      {"Source 'square_source'", "strength[1]", "must be finite and >= 0"});
 }
 
 TEST(InputChecks, TooFewNodesPerAxisThrows) {
@@ -446,7 +515,7 @@ MaterialParams MakeMaterial(const std::string& name) {
   MaterialParams material;
   material.name = name;
   material.total_xs = {1.0};
-  material.scatter_matrix = {0.5};
+  material.scatter_moments = {0.5};
   return material;
 }
 
@@ -461,16 +530,16 @@ TEST(InputChecks, NonFiniteCrossSectionsThrow) {
   EXPECT_THROW(CheckMaterialParams({material}), Error);
 
   material = MakeMaterial("m");
-  material.scatter_matrix = {nan};
+  material.scatter_moments = {nan};
   EXPECT_THROW(CheckMaterialParams({material}), Error);
-  material.scatter_matrix = {inf};
+  material.scatter_moments = {inf};
   EXPECT_THROW(CheckMaterialParams({material}), Error);
 }
 
 TEST(InputChecks, ZeroCrossSectionsAreAllowed) {
   MaterialParams material = MakeMaterial("void_like");
   material.total_xs = {0.0};
-  material.scatter_matrix = {0.0};
+  material.scatter_moments = {0.0};
   EXPECT_NO_THROW(CheckMaterialParams({material}));
 }
 
@@ -480,7 +549,7 @@ TEST(InputChecks, MaterialNeedsGroupsAndMoments) {
   EXPECT_THROW(CheckMaterialParams({material}), Error);
 
   material = MakeMaterial("m");
-  material.scatter_matrix.clear();
+  material.scatter_moments.clear();
   EXPECT_THROW(CheckMaterialParams({material}), Error);
 }
 
@@ -490,12 +559,21 @@ TEST(InputChecks, EmptyListsAreValidForNamedBlocks) {
   EXPECT_NO_THROW(CheckSourceParams({}));
 }
 
-TEST(InputChecks, SourceNeedsAnExpression) {
+TEST(InputChecks, SourceNeedsAStrength) {
   SourceParams source;
   source.name = "s";
   EXPECT_THROW(CheckSourceParams({source}), Error);
-  source.expression = {"1"};
+  source.strengths = {1.0};
   EXPECT_NO_THROW(CheckSourceParams({source}));
+}
+
+TEST(InputChecks, NonFiniteSourceStrengthsThrow) {
+  SourceParams source;
+  source.name = "s";
+  source.strengths = {std::numeric_limits<double>::quiet_NaN()};
+  EXPECT_THROW(CheckSourceParams({source}), Error);
+  source.strengths = {std::numeric_limits<double>::infinity()};
+  EXPECT_THROW(CheckSourceParams({source}), Error);
 }
 
 TEST(InputChecks, SpatialNodesPerAxisBoundary) {

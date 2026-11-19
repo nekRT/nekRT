@@ -3,9 +3,11 @@
 
 #include "utils/input_parameters.h"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstddef>
+#include <filesystem>
 #include <fstream>
 #include <initializer_list>
 #include <iterator>
@@ -265,7 +267,7 @@ void ReadBoundaries(const ryml::ConstNodeRef& root,
 }
 
 // Flattens the YAML `scatter_xs[moment][from][to]` into one vector in that
-// order (see MaterialParams::scatter_matrix). Every moment must be a
+// order (see MaterialParams::scatter_moments). Every moment must be a
 // `num_groups` x `num_groups` matrix.
 std::vector<double> FlattenScatter(
     const std::vector<std::vector<std::vector<double>>>& scatter,
@@ -297,7 +299,7 @@ void ReadMaterials(const ryml::ConstNodeRef& root,
 
     std::vector<std::vector<std::vector<double>>> scatter;
     Require(entry, {"scatter_xs"}).load(&scatter);
-    material.scatter_matrix =
+    material.scatter_moments =
         FlattenScatter(scatter, material.total_xs.size(), material.name);
   }
 }
@@ -312,7 +314,20 @@ void ReadSources(const ryml::ConstNodeRef& root,
     SourceParams& source = sources.emplace_back();
     Require(entry, {"name"}).load(&source.name);
     source.type = ParseEnum(Require(entry, {"type"}), kSourceTypes);
-    Require(entry, {"expression"}).load(&source.expression);
+    Require(entry, {"strength"}).load(&source.strengths);
+  }
+}
+
+void ReadRegions(const ryml::ConstNodeRef& root,
+                 std::vector<RegionParams>& regions) {
+  const ryml::ConstNodeRef list = Require(root, {"regions"});
+  RequireSequence(list);
+  for (const ryml::ConstNodeRef entry : list.children()) {
+    RegionParams& region = regions.emplace_back();
+    Require(entry, {"name"}).load(&region.name);
+    Require(entry, {"material"}).load(&region.material_name);
+    if (!entry.has_child("source")) continue;
+    entry.find_child("source").load(&region.source_name);
   }
 }
 
@@ -342,6 +357,7 @@ InputParameters ParseInputString(std::string yaml) {
   ReadBoundaries(root, input_params.boundaries);
   ReadMaterials(root, input_params.materials);
   ReadSources(root, input_params.sources);
+  ReadRegions(root, input_params.regions);
   ReadAngular(root, input_params.angular_params);
   ReadSpatial(root, input_params.spatial_params);
   ReadSolver(root, input_params.solver_params);
@@ -359,11 +375,23 @@ InputParameters ReadInputFile(const std::string& filename) {
   std::string contents((std::istreambuf_iterator<char>(input_file)),
                        std::istreambuf_iterator<char>());
 
+  InputParameters input_params;
   try {
-    return ParseInputString(std::move(contents));
+    input_params = ParseInputString(std::move(contents));
   } catch (const Error& e) {
     throw Error(filename + ": " + e.what());
   }
+  input_params.mesh_params.filename =
+      ResolveMeshPath(filename, input_params.mesh_params.filename);
+  return input_params;
+}
+
+std::string ResolveMeshPath(const std::string& input_filename,
+                            const std::string& mesh_filename) {
+  // operator/ returns the right-hand side when it is absolute, and adds no
+  // separator when the left-hand side is empty.
+  return (std::filesystem::path(input_filename).parent_path() / mesh_filename)
+      .string();
 }
 
 namespace {
@@ -396,6 +424,13 @@ void CheckNames(std::string_view block, const std::vector<T>& entries) {
   }
 }
 
+// Whether any of `entries` has the name `name`.
+template <typename T>
+bool HasEntryNamed(const std::vector<T>& entries, const std::string& name) {
+  return std::ranges::any_of(
+      entries, [&name](const T& entry) { return entry.name == name; });
+}
+
 // NaN compares false against everything, so test for the valid range instead
 // of the invalid one.
 void CheckFiniteNonNegative(const std::string& what, double value) {
@@ -410,21 +445,34 @@ void CheckInputParameters(const InputParameters& input_parameters) {
   CheckBoundaryParams(input_parameters.boundaries);
   CheckMaterialParams(input_parameters.materials);
   CheckSourceParams(input_parameters.sources);
+  CheckRegionParams(input_parameters.regions);
   CheckSpatialParams(input_parameters.spatial_params);
   CheckSolverParams(input_parameters.solver_params);
 
-  // The materials fix the number of energy groups: sources need one expression
+  // Regions refer to materials and sources by name.
+  for (const RegionParams& region : input_parameters.regions) {
+    const std::string prefix = "Region '" + region.name + "': ";
+    NekRTError(!HasEntryNamed(input_parameters.materials, region.material_name),
+               prefix + "material '" + region.material_name +
+                   "' is not in 'materials'.");
+    NekRTError(
+        !region.source_name.empty() &&
+            !HasEntryNamed(input_parameters.sources, region.source_name),
+        prefix + "source '" + region.source_name + "' is not in 'sources'.");
+  }
+
+  // The materials fix the number of energy groups: sources need one strength
   // for each.
   if (input_parameters.materials.empty()) return;
   const std::size_t num_groups =
       input_parameters.materials.front().total_xs.size();
   for (const SourceParams& source : input_parameters.sources) {
-    NekRTError(source.expression.size() != num_groups,
+    NekRTError(source.strengths.size() != num_groups,
                "Source '" + source.name + "' has " +
-                   std::to_string(source.expression.size()) +
-                   " expressions, but the materials have " +
+                   std::to_string(source.strengths.size()) +
+                   " strengths, but the materials have " +
                    std::to_string(num_groups) +
-                   " energy groups. One expression per group is "
+                   " energy groups. One strength per group is "
                    "required.");
   }
 }
@@ -441,7 +489,7 @@ void CheckMaterialParams(const std::vector<MaterialParams>& material_params) {
     const std::size_t num_groups = material.total_xs.size();
     NekRTError(num_groups == 0,
                prefix + "total_xs must have at least one group.");
-    NekRTError(material.scatter_matrix.empty(),
+    NekRTError(material.scatter_moments.empty(),
                prefix + "scatter_xs must have at least one moment.");
 
     for (std::size_t group = 0; group < num_groups; ++group) {
@@ -449,14 +497,14 @@ void CheckMaterialParams(const std::vector<MaterialParams>& material_params) {
                              material.total_xs[group]);
     }
 
-    // scatter_matrix is [moment][from][to], flattened (see MaterialParams).
-    for (std::size_t i = 0; i < material.scatter_matrix.size(); ++i) {
+    // scatter_moments is [moment][from][to], flattened (see MaterialParams).
+    for (std::size_t i = 0; i < material.scatter_moments.size(); ++i) {
       CheckFiniteNonNegative(prefix + "scatter_xs[" +
                                  std::to_string(i / (num_groups * num_groups)) +
                                  "][" +
                                  std::to_string((i / num_groups) % num_groups) +
                                  "][" + std::to_string(i % num_groups) + "]",
-                             material.scatter_matrix[i]);
+                             material.scatter_moments[i]);
     }
 
     NekRTError(num_groups != material_params.front().total_xs.size(),
@@ -473,14 +521,17 @@ void CheckSourceParams(const std::vector<SourceParams>& source_params) {
 
   for (const SourceParams& source : source_params) {
     const std::string prefix = "Source '" + source.name + "': ";
-    NekRTError(source.expression.empty(),
-               prefix + "expression must have at least one group.");
-    for (std::size_t group = 0; group < source.expression.size(); ++group) {
-      NekRTError(source.expression[group].empty(), prefix + "expression[" +
-                                                       std::to_string(group) +
-                                                       "] must not be empty.");
+    NekRTError(source.strengths.empty(),
+               prefix + "strength must have at least one group.");
+    for (std::size_t group = 0; group < source.strengths.size(); ++group) {
+      CheckFiniteNonNegative(prefix + "strength[" + std::to_string(group) + "]",
+                             source.strengths[group]);
     }
   }
+}
+
+void CheckRegionParams(const std::vector<RegionParams>& region_params) {
+  CheckNames("regions", region_params);
 }
 
 void CheckSpatialParams(const SpatialParams& spatial_params) {

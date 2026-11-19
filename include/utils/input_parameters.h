@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "quadrature/quad_set_params.h"
@@ -61,9 +62,9 @@ struct MaterialParams {
 
   /// @brief Legendre scattering moments in 1/cm, flattened from the YAML
   /// `scatter_xs[moment][from_group][to_group]` in that order (row-major), so
-  /// the entry is `scatter_matrix[(moment * G + from) * G + to]` with `G` =
+  /// the entry is `scatter_moments[(moment * G + from) * G + to]` with `G` =
   /// `total_xs.size()`. Holds `G * G` entries per listed moment.
-  std::vector<double> scatter_matrix;
+  std::vector<double> scatter_moments;
 };
 
 /**
@@ -77,9 +78,23 @@ struct SourceParams {
   /// @brief Kind of source
   SourceType type = SourceType::Volumetric;
 
-  /// @brief Source strength per group in n/cm^3/s/str, as expressions in terms
-  /// of position, ordered lowest energy to highest.
-  std::vector<std::string> expression;
+  /// @brief Isotropic source strength per group in n/cm^3/s/str
+  std::vector<double> strengths;
+};
+
+/**
+ * @brief Individual regions and the sources and materials they are made of.
+ *
+ */
+struct RegionParams {
+  /// @brief Unique region name.
+  std::string name;
+
+  /// @brief Material name.
+  std::string material_name;
+
+  /// @brief Source name.
+  std::string source_name;
 };
 
 /**
@@ -166,6 +181,9 @@ struct InputParameters {
   /// @brief Set of all sources in simulation
   std::vector<SourceParams> sources;
 
+  /// @brief Set of all regions in simulation
+  std::vector<RegionParams> regions;
+
   /// @brief Set of all boundaries in simulation
   std::vector<BoundaryParams> boundaries;
 
@@ -183,6 +201,42 @@ struct InputParameters {
 };
 
 /**
+ * @brief Creates a map from each entry's name to its index in `entries`.
+ *
+ * The Build*() functions (for example BuildMaterials()) keep the input order,
+ * so the index of an entry is also the ID of the object built from it.
+ *
+ * @tparam T A parameter struct with a `name` member, such as MaterialParams.
+ * @param entries Entries with unique names (see CheckInputParameters()).
+ * @return Map from entry name to its index in `entries`.
+ */
+template <typename T>
+std::unordered_map<std::string, int> CreateNameIndexMap(
+    const std::vector<T>& entries) {
+  std::unordered_map<std::string, int> name_to_index;
+  name_to_index.reserve(entries.size());
+  for (int i = 0; i < static_cast<int>(entries.size()); ++i) {
+    name_to_index.emplace(entries[i].name, i);
+  }
+  return name_to_index;
+}
+
+/**
+ * @brief Resolves the mesh file name from the input file against the input
+ * file's directory.
+ *
+ * A relative `mesh_filename` is relative to the directory of `input_filename`,
+ * not to the working directory. An absolute `mesh_filename` is returned
+ * unchanged.
+ *
+ * @param input_filename Path to the YAML input file, as given by the user.
+ * @param mesh_filename The `mesh.filename` entry of the input file.
+ * @return Path to the mesh file.
+ */
+std::string ResolveMeshPath(const std::string& input_filename,
+                            const std::string& mesh_filename);
+
+/**
  * @brief Parses YAML input text.
  *
  * Only checks that required keys are present and enum spellings are known;
@@ -196,6 +250,9 @@ InputParameters ParseInputString(std::string yaml);
 
 /**
  * @brief Reads and parses a YAML input file.
+ *
+ * The mesh file name is resolved against the input file's directory (see
+ * ResolveMeshPath()).
  *
  * @param filename Path to the YAML input file.
  * @return The parsed input parameters.
@@ -212,7 +269,9 @@ InputParameters ReadInputFile(const std::string& filename);
  * InputParameters by hand.
  *
  * Checks each block (see the Check*Params() functions below), then checks that
- * every source has one expression for each energy group of the materials.
+ * every region names a defined material and, if it has one, a defined source,
+ * and that every source has one strength for each energy group of the
+ * materials.
  *
  * @param input_parameters The parameters to check.
  * @throws Error If any value is invalid. The message names the offending block
@@ -249,13 +308,26 @@ void CheckMaterialParams(const std::vector<MaterialParams>& material_params);
  * @brief Checks the `sources` entries.
  *
  * Names must be valid and unique (see CheckBoundaryParams()). Each source needs
- * at least one expression and no expression may be empty. The expression count
- * is compared with the materials' group count by CheckInputParameters().
+ * at least one strength, and every strength must be finite and non-negative.
+ * The strength count is compared with the materials' group count by
+ * CheckInputParameters().
  *
  * @param source_params The sources to check.
  * @throws Error If any of the above is violated.
  */
 void CheckSourceParams(const std::vector<SourceParams>& source_params);
+
+/**
+ * @brief Checks the `regions` entries.
+ *
+ * Names must be valid and unique (see CheckBoundaryParams()). Whether the
+ * material and source names refer to defined entries is checked by
+ * CheckInputParameters().
+ *
+ * @param region_params The regions to check.
+ * @throws Error If any of the above is violated.
+ */
+void CheckRegionParams(const std::vector<RegionParams>& region_params);
 
 /**
  * @brief Checks the `spatial` block.
