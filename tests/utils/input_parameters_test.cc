@@ -177,10 +177,10 @@ TEST(InputParameters, ReadsMaterialsAndFlattensScatter) {
   EXPECT_EQ(input.materials[0].name, "fuel");
   EXPECT_EQ(input.materials[0].total_xs, (std::vector<double>{0.75, 1.5}));
   // [moment][from][to] flattened row-major.
-  EXPECT_EQ(input.materials[0].scatter_matrix,
+  EXPECT_EQ(input.materials[0].scatter_moments,
             (std::vector<double>{0.1, 0.2, 0.3, 0.4}));
   EXPECT_EQ(input.materials[1].name, "moderator");
-  EXPECT_EQ(input.materials[1].scatter_matrix,
+  EXPECT_EQ(input.materials[1].scatter_moments,
             (std::vector<double>{0.5, 0.6, 0.7, 0.8}));
 }
 
@@ -309,7 +309,7 @@ TEST(InputParameters, ReadsLathropExample) {
   EXPECT_EQ(input.boundaries.size(), 2u);
   ASSERT_EQ(input.materials.size(), 1u);
   EXPECT_EQ(input.materials[0].total_xs, (std::vector<double>{0.75}));
-  EXPECT_EQ(input.materials[0].scatter_matrix, (std::vector<double>{0.5}));
+  EXPECT_EQ(input.materials[0].scatter_moments, (std::vector<double>{0.5}));
   ASSERT_EQ(input.sources.size(), 1u);
   EXPECT_EQ(input.sources[0].expression,
             (std::vector<std::string>{"1.0/4.0/pi"}));
@@ -446,7 +446,7 @@ MaterialParams MakeMaterial(const std::string& name) {
   MaterialParams material;
   material.name = name;
   material.total_xs = {1.0};
-  material.scatter_matrix = {0.5};
+  material.scatter_moments = {0.5};
   return material;
 }
 
@@ -461,16 +461,16 @@ TEST(InputChecks, NonFiniteCrossSectionsThrow) {
   EXPECT_THROW(CheckMaterialParams({material}), Error);
 
   material = MakeMaterial("m");
-  material.scatter_matrix = {nan};
+  material.scatter_moments = {nan};
   EXPECT_THROW(CheckMaterialParams({material}), Error);
-  material.scatter_matrix = {inf};
+  material.scatter_moments = {inf};
   EXPECT_THROW(CheckMaterialParams({material}), Error);
 }
 
 TEST(InputChecks, ZeroCrossSectionsAreAllowed) {
   MaterialParams material = MakeMaterial("void_like");
   material.total_xs = {0.0};
-  material.scatter_matrix = {0.0};
+  material.scatter_moments = {0.0};
   EXPECT_NO_THROW(CheckMaterialParams({material}));
 }
 
@@ -480,7 +480,7 @@ TEST(InputChecks, MaterialNeedsGroupsAndMoments) {
   EXPECT_THROW(CheckMaterialParams({material}), Error);
 
   material = MakeMaterial("m");
-  material.scatter_matrix.clear();
+  material.scatter_moments.clear();
   EXPECT_THROW(CheckMaterialParams({material}), Error);
 }
 

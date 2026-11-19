@@ -61,9 +61,12 @@ struct MaterialParams {
 
   /// @brief Legendre scattering moments in 1/cm, flattened from the YAML
   /// `scatter_xs[moment][from_group][to_group]` in that order (row-major), so
-  /// the entry is `scatter_matrix[(moment * G + from) * G + to]` with `G` =
+  /// the entry is `scatter_moments[(moment * G + from) * G + to]` with `G` =
   /// `total_xs.size()`. Holds `G * G` entries per listed moment.
-  std::vector<double> scatter_matrix;
+  std::vector<double> scatter_moments;
+
+  /// @brief Number of Legendre scattering moments used.
+  int n_legendre_moments;
 };
 
 /**

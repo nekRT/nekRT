@@ -266,7 +266,7 @@ void ReadBoundaries(const ryml::ConstNodeRef& root,
 }
 
 // Flattens the YAML `scatter_xs[moment][from][to]` into one vector in that
-// order (see MaterialParams::scatter_matrix). Every moment must be a
+// order (see MaterialParams::scatter_moments). Every moment must be a
 // `num_groups` x `num_groups` matrix.
 std::vector<double> FlattenScatter(
     const std::vector<std::vector<std::vector<double>>>& scatter,
@@ -298,7 +298,7 @@ void ReadMaterials(const ryml::ConstNodeRef& root,
 
     std::vector<std::vector<std::vector<double>>> scatter;
     Require(entry, {"scatter_xs"}).load(&scatter);
-    material.scatter_matrix =
+    material.scatter_moments =
         FlattenScatter(scatter, material.total_xs.size(), material.name);
   }
 }
@@ -447,7 +447,7 @@ void CheckMaterialParams(const std::vector<MaterialParams>& material_params) {
     const std::size_t num_groups = material.total_xs.size();
     NekRTError(num_groups == 0,
                prefix + "total_xs must have at least one group.");
-    NekRTError(material.scatter_matrix.empty(),
+    NekRTError(material.scatter_moments.empty(),
                prefix + "scatter_xs must have at least one moment.");
 
     for (std::size_t group = 0; group < num_groups; ++group) {
@@ -455,14 +455,14 @@ void CheckMaterialParams(const std::vector<MaterialParams>& material_params) {
                              material.total_xs[group]);
     }
 
-    // scatter_matrix is [moment][from][to], flattened (see MaterialParams).
-    for (std::size_t i = 0; i < material.scatter_matrix.size(); ++i) {
+    // scatter_moments is [moment][from][to], flattened (see MaterialParams).
+    for (std::size_t i = 0; i < material.scatter_moments.size(); ++i) {
       CheckFiniteNonNegative(prefix + "scatter_xs[" +
                                  std::to_string(i / (num_groups * num_groups)) +
                                  "][" +
                                  std::to_string((i / num_groups) % num_groups) +
                                  "][" + std::to_string(i % num_groups) + "]",
-                             material.scatter_matrix[i]);
+                             material.scatter_moments[i]);
     }
 
     NekRTError(num_groups != material_params.front().total_xs.size(),
