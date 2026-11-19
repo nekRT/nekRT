@@ -7,7 +7,7 @@
 
 namespace nekrt {
 std::vector<Region> BuildRegions(
-    const std::vector<RegionParams> region_params,
+    const std::vector<RegionParams>& region_params,
     const std::unordered_map<std::string, int>& material_id_map,
     const std::unordered_map<std::string, int>& source_id_map) {
   std::vector<Region> regions;
@@ -23,7 +23,7 @@ std::vector<Region> BuildRegions(
 }
 
 std::unordered_map<std::string, int> CreateRegionIDMap(
-    const std::vector<RegionParams> region_params) {
+    const std::vector<RegionParams>& region_params) {
   std::unordered_map<std::string, int> region_id_map;
 
   int count = 0;
