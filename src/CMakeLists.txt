@@ -15,7 +15,28 @@ add_library(
 )
 
 target_compile_features(nekrt_lib PUBLIC cxx_std_20)
-target_include_directories(nekrt_lib PUBLIC ${PROJECT_SOURCE_DIR}/include)
+target_include_directories(
+	nekrt_lib
+	PUBLIC ${PROJECT_SOURCE_DIR}/include ${PROJECT_BINARY_DIR}/include
+)
+
+# Build information printed in the output header. The git hash is captured at
+# configure time, so it goes stale until CMake is re-run.
+execute_process(
+	COMMAND git rev-parse HEAD
+	WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+	OUTPUT_VARIABLE NEKRT_GIT_SHA
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+	ERROR_QUIET
+)
+if(NOT NEKRT_GIT_SHA)
+	set(NEKRT_GIT_SHA "unknown")
+endif()
+configure_file(
+	${PROJECT_SOURCE_DIR}/cmake/build_info.h.in
+	${PROJECT_BINARY_DIR}/include/utils/build_info.h
+	@ONLY
+)
 
 # The dependencies are PUBLIC so that the executable and the tests get them
 # through nekrt_lib.

@@ -3,59 +3,132 @@
 
 #include "utils/output.h"
 
+#include <fmt/chrono.h>
 #include <fmt/core.h>
-#include <fmt/ostream.h>
+#include <unistd.h>
+
+#include <array>
+#include <ctime>
+#include <mfem.hpp>
+#include <string>
+#include <string_view>
+
+#include "utils/build_info.h"
 
 namespace nekrt {
-void PrintHeader() {
-  fmt::print(
-      "                         @==@                         \n"
-      "                        @====@                        \n"
-      "                        ++++++                        \n"
-      "                       @++++++@                       \n"
-      "                      @++++++++@                      \n"
-      "                      %********%                      \n"
-      "                     @**********@                     \n"
-      "                     @**********@                     \n"
-      "                    @############@                    \n"
-      "                    @############@                    \n"
-      "                   @##############@                   \n"
-      "       @%%@        %%%%%%%%%%%%%%%%        @%%@       \n"
-      "    %%.    @%%%%%%@                @%%%%%%@     %%    \n"
-      "            @%%%%@                  @%%%%@            \n"
-      "             @%%@                    @%%@             \n");
+namespace {
 
-  fmt::print(
-      "                        ▄▄        ▄▄▄▄▄▄    ▄▄▄▄▄▄▄▄ \n"
-      "                        ██        ██▀▀▀▀██  ▀▀▀██▀▀▀ \n"
-      "    ██▄████▄   ▄████▄   ██ ▄██▀   ██    ██     ██    \n"
-      "    ██▀   ██  ██▄▄▄▄██  ██▄██     ███████      ██    \n"
-      "    ██    ██  ██▀▀▀▀▀▀  ██▀██▄    ██  ▀██▄     ██    \n"
-      "    ██    ██  ▀██▄▄▄▄█  ██  ▀█▄   ██    ██     ██    \n"
-      "    ▀▀    ▀▀    ▀▀▀▀▀   ▀▀   ▀▀▀  ▀▀    ▀▀▀    ▀▀    \n\n");
+// Kept pure ASCII so the header displays correctly in any log file or locale.
+constexpr std::string_view kLogo =
+    "                         @==@\n"
+    "                        @====@\n"
+    "                        ++++++\n"
+    "                       @++++++@\n"
+    "                      @++++++++@\n"
+    "                      %********%\n"
+    "                     @**********@\n"
+    "                     @**********@\n"
+    "                    @############@\n"
+    "                    @############@\n"
+    "                   @##############@\n"
+    "       @%%@        %%%%%%%%%%%%%%%%        @%%@\n"
+    "    %%.    @%%%%%%@                @%%%%%%@     %%\n"
+    "            @%%%%@                  @%%%%@\n"
+    "             @%%@                    @%%@\n";
 
-  fmt::print(
-      "    Description | Spectral Elements for Radiation Transport \n"
-      "      Copyright | 2026, nekRT\n"
-      "        License | "
-      "https://github.com/nekRT/nekRT/blob/main/LICENSE\n\n");
+constexpr std::string_view kWordmark =
+    "                       ##      #######   ########\n"
+    "                       ##      ##    ##     ##\n"
+    "       ## ####   ####  ##  ##  ##    ##     ##\n"
+    "       ###  ## ##   ## ## ##   #######      ##\n"
+    "       ##   ## ####### ####    ##  ##       ##\n"
+    "       ##   ## ##      ## ##   ##   ##      ##\n"
+    "       ##   ##  #####  ##  ##  ##    ##     ##\n";
+
+std::string CurrentDateTime() {
+  const std::time_t now = std::time(nullptr);
+  std::tm local_time{};
+  if (localtime_r(&now, &local_time) == nullptr) {
+    return "unknown";
+  }
+  return fmt::format("{:%Y-%m-%d %H:%M:%S}", local_time);
 }
 
-void PrintProblem(const std::string input,
-                  const InputParameters& input_params) {
-  fmt::print("        Problem | {}\n", input_params.problem_params.name);
-  fmt::print("     Input file | {}\n", input);
-  fmt::print("      Mesh file | {}\n\n", input_params.mesh_params.filename);
+std::string Hostname() {
+  std::array<char, 256> buffer{};
+  if (gethostname(buffer.data(), buffer.size() - 1) != 0) {
+    return "unknown";
+  }
+  return {buffer.data()};
 }
 
-void PrintMeshInfo(const size_t n_nodes, const size_t n_elements,
+}  // namespace
+
+RunInfo GetRunInfo() { return {CurrentDateTime(), Hostname()}; }
+
+std::string FormatField(std::string_view label, std::string_view value) {
+  return fmt::format("{:>{}} | {}\n", label, kLabelWidth, value);
+}
+
+std::string FormatBanner(std::string_view title) {
+  return fmt::format(" {:=^{}}\n", fmt::format(">  {}  <", title),
+                     kLineWidth - 1);
+}
+
+std::string FormatHeader(const RunInfo& run_info) {
+  std::string header;
+  header += kLogo;
+  header += '\n';
+  header += kWordmark;
+  header += '\n';
+  header += FormatField("", "Spectral Elements for Radiation Transport");
+  header += FormatField("Copyright", "2026, nekRT");
+  header += FormatField("License",
+                        "https://github.com/nekRT/nekRT/blob/main/LICENSE");
+  header += FormatField("Version", kVersion);
+  header += FormatField("Git SHA1", kGitSha);
+  header += FormatField("Build Type", kBuildType);
+  header += FormatField("Compiler", kCompiler);
+  header += FormatField("MFEM Version", MFEM_VERSION_STRING);
+  header += FormatField("Date/Time", run_info.date_time);
+  header += FormatField("Hostname", run_info.hostname);
+  header += '\n';
+  return header;
+}
+
+std::string FormatProblem(std::string_view input,
+                          const InputParameters& input_params) {
+  std::string section = FormatBanner("PROBLEM");
+  section += '\n';
+  section += FormatField("Problem", input_params.problem_params.name);
+  section += FormatField("Input File", input);
+  section += FormatField("Mesh File", input_params.mesh_params.filename);
+  section += '\n';
+  return section;
+}
+
+std::string FormatMeshInfo(const std::size_t n_nodes,
+                           const std::size_t n_elements,
+                           const unsigned int dimension) {
+  std::string section = FormatBanner("MESH");
+  section += '\n';
+  section += FormatField("Dimension", fmt::to_string(dimension));
+  section += FormatField("Nodes", fmt::to_string(n_nodes));
+  section += FormatField("Elements", fmt::to_string(n_elements));
+  section += '\n';
+  return section;
+}
+
+// NOTE(parallel): Only rank 0 should print once MPI is added.
+void PrintHeader() { fmt::print("{}", FormatHeader(GetRunInfo())); }
+
+void PrintProblem(std::string_view input, const InputParameters& input_params) {
+  fmt::print("{}", FormatProblem(input, input_params));
+}
+
+void PrintMeshInfo(const std::size_t n_nodes, const std::size_t n_elements,
                    const unsigned int dimension) {
-  fmt::print(
-      "Mesh info:\n"
-      "       Number of nodes: {}\n"
-      "    Number of elements: {}\n"
-      "             Dimension: {}\n\n",
-      n_nodes, n_elements, dimension);
+  fmt::print("{}", FormatMeshInfo(n_nodes, n_elements, dimension));
 }
 
 void PrintSourceIterationColumns() {
@@ -65,4 +138,5 @@ void PrintSourceIterationColumns() {
       "  =============  =============  ============= | =============  "
       "=============  =============\n");
 }
+
 }  // namespace nekrt
