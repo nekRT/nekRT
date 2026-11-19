@@ -82,6 +82,21 @@ struct SourceParams {
 };
 
 /**
+ * @brief Individual regions and the sources and materials they are made of.
+ *
+ */
+struct RegionParams {
+  /// @brief Unique region name.
+  std::string name;
+
+  /// @brief Material name.
+  std::string material_name;
+
+  /// @brief Source name.
+  std::string source_name;
+};
+
+/**
  * @brief `source_iterations` sub-block parameters.
  *
  */
@@ -164,6 +179,9 @@ struct InputParameters {
 
   /// @brief Set of all sources in simulation
   std::vector<SourceParams> sources;
+
+  /// @brief Set of all regions in simulation
+  std::vector<RegionParams> regions;
 
   /// @brief Set of all boundaries in simulation
   std::vector<BoundaryParams> boundaries;

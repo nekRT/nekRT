@@ -317,6 +317,19 @@ void ReadSources(const ryml::ConstNodeRef& root,
   }
 }
 
+void ReadRegions(const ryml::ConstNodeRef& root,
+                 std::vector<RegionParams>& regions) {
+  const ryml::ConstNodeRef list = Require(root, {"regions"});
+  RequireSequence(list);
+  for (const ryml::ConstNodeRef entry : list.children()) {
+    RegionParams& region = regions.emplace_back();
+    Require(entry, {"name"}).load(&region.name);
+    Require(entry, {"material"}).load(&region.material_name);
+    if (!entry.has_child("source")) continue;
+    entry.find_child("source").load(&region.source_name);
+  }
+}
+
 }  // namespace
 
 InputParameters ParseInputString(std::string yaml) {
@@ -343,6 +356,7 @@ InputParameters ParseInputString(std::string yaml) {
   ReadBoundaries(root, input_params.boundaries);
   ReadMaterials(root, input_params.materials);
   ReadSources(root, input_params.sources);
+  ReadRegions(root, input_params.regions);
   ReadAngular(root, input_params.angular_params);
   ReadSpatial(root, input_params.spatial_params);
   ReadSolver(root, input_params.solver_params);
