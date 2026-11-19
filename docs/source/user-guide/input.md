@@ -79,6 +79,7 @@ A "region" in nekRT is physical grouping of a material and (optionally) a source
 Like boundary conditions, a region for an element is specified in the mesh itself using the `regions:` prefix (see {ref}`user-guide/meshes:Boundary Conditions and Regions`).
 The `name` of a region must match the prefix-free name in the mesh to be valid.
 For example, `region:MOX fuel` must be named `MOX fuel`.
+The `material` of a region must name an entry of the `materials` block, and its optional `source` must name an entry of the `sources` block.
 
 
 ```{schema-block} regions
@@ -142,11 +143,12 @@ The checks are:
 - The top level of the file may only contain the blocks described on this page.
   An unknown top-level key, such as `source:` instead of `sources:`, is an error rather than being ignored.
   Extra keys inside a block are not rejected by nekRT itself, but the JSON schema for the input file (`python/src/nekrt/schemas/input-v0.schema.json`) does reject them.
-- Names of boundary conditions, materials, and sources must be unique within their block.
+- Names of boundary conditions, materials, sources, and regions must be unique within their block.
   A name starts with a lowercase letter and contains only lowercase letters, digits, and underscores.
 - Cross sections must be finite and greater than or equal to zero.
   Each material needs at least one energy group and one scattering moment, and all materials must have the same number of energy groups.
 - Each source needs exactly one strength per energy group, and every strength must be finite and greater than or equal to zero.
+- Each region's `material` must be defined in `materials`, and its `source`, if given, must be defined in `sources`.
 - `nodes_per_axis` must be at least 2.
 - Each quadrature set needs at least one direction (`n_directions`).
 - The `tolerance` must be greater than zero, and `max_iterations` must be at least 1.

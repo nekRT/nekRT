@@ -247,7 +247,9 @@ InputParameters ReadInputFile(const std::string& filename);
  * InputParameters by hand.
  *
  * Checks each block (see the Check*Params() functions below), then checks that
- * every source has one strength for each energy group of the materials.
+ * every region names a defined material and, if it has one, a defined source,
+ * and that every source has one strength for each energy group of the
+ * materials.
  *
  * @param input_parameters The parameters to check.
  * @throws Error If any value is invalid. The message names the offending block
@@ -292,6 +294,18 @@ void CheckMaterialParams(const std::vector<MaterialParams>& material_params);
  * @throws Error If any of the above is violated.
  */
 void CheckSourceParams(const std::vector<SourceParams>& source_params);
+
+/**
+ * @brief Checks the `regions` entries.
+ *
+ * Names must be valid and unique (see CheckBoundaryParams()). Whether the
+ * material and source names refer to defined entries is checked by
+ * CheckInputParameters().
+ *
+ * @param region_params The regions to check.
+ * @throws Error If any of the above is violated.
+ */
+void CheckRegionParams(const std::vector<RegionParams>& region_params);
 
 /**
  * @brief Checks the `spatial` block.

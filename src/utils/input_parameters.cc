@@ -3,6 +3,7 @@
 
 #include "utils/input_parameters.h"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstddef>
@@ -423,6 +424,13 @@ void CheckNames(std::string_view block, const std::vector<T>& entries) {
   }
 }
 
+// Whether any of `entries` has the name `name`.
+template <typename T>
+bool HasEntryNamed(const std::vector<T>& entries, const std::string& name) {
+  return std::ranges::any_of(
+      entries, [&name](const T& entry) { return entry.name == name; });
+}
+
 // NaN compares false against everything, so test for the valid range instead
 // of the invalid one.
 void CheckFiniteNonNegative(const std::string& what, double value) {
@@ -437,8 +445,21 @@ void CheckInputParameters(const InputParameters& input_parameters) {
   CheckBoundaryParams(input_parameters.boundaries);
   CheckMaterialParams(input_parameters.materials);
   CheckSourceParams(input_parameters.sources);
+  CheckRegionParams(input_parameters.regions);
   CheckSpatialParams(input_parameters.spatial_params);
   CheckSolverParams(input_parameters.solver_params);
+
+  // Regions refer to materials and sources by name.
+  for (const RegionParams& region : input_parameters.regions) {
+    const std::string prefix = "Region '" + region.name + "': ";
+    NekRTError(!HasEntryNamed(input_parameters.materials, region.material_name),
+               prefix + "material '" + region.material_name +
+                   "' is not in 'materials'.");
+    NekRTError(
+        !region.source_name.empty() &&
+            !HasEntryNamed(input_parameters.sources, region.source_name),
+        prefix + "source '" + region.source_name + "' is not in 'sources'.");
+  }
 
   // The materials fix the number of energy groups: sources need one strength
   // for each.
@@ -507,6 +528,10 @@ void CheckSourceParams(const std::vector<SourceParams>& source_params) {
                              source.strengths[group]);
     }
   }
+}
+
+void CheckRegionParams(const std::vector<RegionParams>& region_params) {
+  CheckNames("regions", region_params);
 }
 
 void CheckSpatialParams(const SpatialParams& spatial_params) {

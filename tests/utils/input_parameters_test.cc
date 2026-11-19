@@ -223,10 +223,13 @@ TEST(InputParameters, ReadsRegions) {
 }
 
 TEST(InputParameters, SourcesBlockIsOptional) {
-  const std::string yaml = Modified(
+  std::string yaml = Modified(
       "sources:\n  - name: square_source\n    type: volumetric\n"
       "    strength: [0.25, 0]\n",
       "");
+  // Without sources, no region may name one.
+  const std::string region_source = "    source: square_source\n";
+  yaml.erase(yaml.find(region_source), region_source.size());
   EXPECT_TRUE(ParseInputString(yaml).sources.empty());
 }
 
@@ -436,6 +439,29 @@ TEST(InputChecks, MaterialsMustHaveTheSameNumberOfGroups) {
                "    scatter_xs: [[[0.5, 0.6], [0.7, 0.8]]]\n",
                "    total_xs: [2.0]\n    scatter_xs: [[[0.5]]]\n"),
       {"Material 'moderator'", "same number of groups"});
+}
+
+TEST(InputChecks, DuplicateRegionNameThrows) {
+  ExpectParseErrorContains(
+      Modified("name: moderator_region", "name: fuel_region"),
+      {"Duplicate name 'fuel_region'", "regions"});
+}
+
+TEST(InputChecks, InvalidRegionNameThrows) {
+  ExpectParseErrorContains(Modified("name: fuel_region", "name: Fuel"),
+                           {"Invalid name 'Fuel'", "regions"});
+}
+
+TEST(InputChecks, RegionMaterialMustExist) {
+  ExpectParseErrorContains(
+      Modified("    material: moderator\n", "    material: water\n"),
+      {"Region 'moderator_region'", "material 'water'", "not in 'materials'"});
+}
+
+TEST(InputChecks, RegionSourceMustExist) {
+  ExpectParseErrorContains(
+      Modified("source: square_source", "source: point_source"),
+      {"Region 'fuel_region'", "source 'point_source'", "not in 'sources'"});
 }
 
 TEST(InputChecks, SourceStrengthCountMustMatchGroups) {
