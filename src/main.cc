@@ -5,6 +5,7 @@
 #include <mfem.hpp>
 #include <string>
 
+#include "materials/material.h"
 #include "utils/errors.h"
 #include "utils/input_parameters.h"
 #include "utils/output.h"
@@ -27,6 +28,10 @@ int main(int argc, char** argv) {
   }
 
   nekrt::PrintProblem(input_filename, input_params);
+
+  // create materials
+  std::vector<nekrt::Material> materials =
+      nekrt::BuildMaterials(input_params.materials);
 
   // load mesh
   mfem::Mesh mesh(input_params.mesh_params.filename);
