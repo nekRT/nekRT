@@ -4,6 +4,7 @@
 #ifndef NEKRT_REGIONS_REGION_H_
 #define NEKRT_REGIONS_REGION_H_
 
+#include <mfem.hpp>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -40,6 +41,22 @@ std::vector<Region> BuildRegions(
 
 std::unordered_map<std::string, int> CreateRegionIDMap(
     const std::vector<RegionParams>& region_params);
+
+/**
+ * @brief Builds a table from mesh element attribute to region index.
+ *
+ * Each region is looked up in the mesh as the physical group `region:<name>`.
+ *
+ * @param region_id_map Region name to region index.
+ * @param mesh Mesh loaded from a GMSH file.
+ * @return Table indexed by element attribute. Attributes that no region claims
+ *   hold -1.
+ * @throws Error If a region is missing from the mesh, lists an attribute the
+ *   mesh does not use, or shares an attribute with another region.
+ */
+mfem::Array<int> AttributeToRegionIndex(
+    const std::unordered_map<std::string, int>& region_id_map,
+    const mfem::Mesh& mesh);
 
 }  // namespace nekrt
 
