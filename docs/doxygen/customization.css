@@ -2,12 +2,9 @@
  * nekRT customization for Doxygen Awesome.
  *
  * Loaded after doxygen-awesome.css and built on its CSS variables. The
- * palette is sampled from matplotlib's magma, as in the logo
- * (docs/source/logo/nekrt_logo.py), and matches docs/source/conf.py:
- *
- *   magma(0.00) #000004   magma(0.15) #251255   magma(0.20) #3B0F70
- *   magma(0.30) #641A80   magma(0.55) #CA3E72   magma(0.70) #F7705C
- *   magma(0.75) #FC8961   magma(0.92) #FED89A
+ * palette matches html_theme_options in docs/source/conf.py: violet brand
+ * colors on cool neutrals. Only the logo uses magma
+ * (docs/source/logo/nekrt_logo.py).
  */
 
 /* -- Light mode ----------------------------------------------------------- */
@@ -19,8 +16,8 @@ html {
 
   --page-background-color: #FFFFFF;
   --page-foreground-color: #1B1424;
-  --page-secondary-foreground-color: #5E5670;
-  --separator-color: #DDD6E6;
+  --page-secondary-foreground-color: #564E68;
+  --separator-color: #D3CBDF;
 
   /* Room for long signatures and template parameters. */
   --content-maxwidth: 1150px;
@@ -29,19 +26,19 @@ html {
   --border-radius-medium: 6px;
   --border-radius-large: 8px;
 
-  --fragment-background: #F7F4FA;
+  --fragment-background: #F3F0F7;
   --fragment-foreground: #1B1424;
-  --code-background: #F7F4FA;
+  --code-background: #F3F0F7;
   --code-foreground: #251255;
 
   --tablehead-background: #3B0F70;
   --tablehead-foreground: #FFFFFF;
 
-  --side-nav-background: #F7F4FA;
+  --side-nav-background: #DDD4EA;
   --side-nav-foreground: #1B1424;
-  --searchbar-background: #F7F4FA;
+  --searchbar-background: #F3F0F7;
 
-  --blockquote-background: #ECE6F3;
+  --blockquote-background: #E2DBEC;
   --blockquote-foreground: #1B1424;
 
   --warning-color: #CA3E72;
@@ -60,66 +57,66 @@ html {
   html:not(.light-mode) {
     color-scheme: dark;
 
-    --primary-color: #FC8961;
-    --primary-dark-color: #FED89A;
-    --primary-light-color: #8C2981;
+    --primary-color: #B79CF5;
+    --primary-dark-color: #D6C8FB;
+    --primary-light-color: #9A86C9;
 
-    --page-background-color: #07050F;
-    --page-foreground-color: #EFE9F5;
-    --page-secondary-foreground-color: #B3A9C4;
-    --separator-color: #2B2142;
+    --page-background-color: #14121C;
+    --page-foreground-color: #E7E4EF;
+    --page-secondary-foreground-color: #A9A3B8;
+    --separator-color: #2E2940;
 
-    --fragment-background: #140E36;
-    --fragment-foreground: #EFE9F5;
-    --code-background: #140E36;
-    --code-foreground: #EFE9F5;
+    --fragment-background: #211D2D;
+    --fragment-foreground: #E7E4EF;
+    --code-background: #211D2D;
+    --code-foreground: #E7E4EF;
 
-    --tablehead-background: #3B0F70;
+    --tablehead-background: #3B2A66;
     --tablehead-foreground: #FFFFFF;
 
-    --side-nav-background: #000004;
-    --side-nav-foreground: #EFE9F5;
-    --searchbar-background: #140E36;
+    --side-nav-background: #0E0C14;
+    --side-nav-foreground: #E7E4EF;
+    --searchbar-background: #211D2D;
 
-    --blockquote-background: #1A1230;
-    --blockquote-foreground: #EFE9F5;
+    --blockquote-background: #1A1724;
+    --blockquote-foreground: #E7E4EF;
 
-    --warning-color: #F7705C;
-    --warning-color-dark: #CA3E72;
-    --warning-color-darker: #A8325F;
+    --warning-color: #9D84E8;
+    --warning-color-dark: #8B6FD9;
+    --warning-color-darker: #6F55BE;
   }
 }
 
 html.dark-mode {
   color-scheme: dark;
 
-  --primary-color: #FC8961;
-  --primary-dark-color: #FED89A;
-  --primary-light-color: #8C2981;
+  --primary-color: #B79CF5;
+  --primary-dark-color: #D6C8FB;
+  --primary-light-color: #9A86C9;
 
-  --page-background-color: #07050F;
-  --page-foreground-color: #EFE9F5;
-  --page-secondary-foreground-color: #B3A9C4;
-  --separator-color: #2B2142;
+  --page-background-color: #14121C;
+  --page-foreground-color: #E7E4EF;
+  --page-secondary-foreground-color: #A9A3B8;
+  --separator-color: #2E2940;
 
-  --fragment-background: #140E36;
-  --fragment-foreground: #EFE9F5;
-  --code-background: #140E36;
-  --code-foreground: #EFE9F5;
+  --fragment-background: #211D2D;
+  --fragment-foreground: #E7E4EF;
+  --code-background: #211D2D;
+  --code-foreground: #E7E4EF;
 
-  --tablehead-background: #3B0F70;
+  --tablehead-background: #3B2A66;
   --tablehead-foreground: #FFFFFF;
 
-  --side-nav-background: #000004;
-  --side-nav-foreground: #EFE9F5;
-  --searchbar-background: #140E36;
+  --side-nav-background: #0E0C14;
+  --side-nav-foreground: #E7E4EF;
+  --searchbar-background: #211D2D;
 
-  --blockquote-background: #1A1230;
-  --blockquote-foreground: #EFE9F5;
+  --blockquote-background: #1A1724;
+  --blockquote-foreground: #E7E4EF;
 
-  --warning-color: #F7705C;
-  --warning-color-dark: #CA3E72;
-  --warning-color-darker: #A8325F;
+  --warning-color: #9D84E8;
+  --warning-color-dark: #8B6FD9;
+  --warning-color-darker: #6F55BE;
 }
 
 /* -- Header --------------------------------------------------------------- */

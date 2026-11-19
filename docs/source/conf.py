@@ -101,18 +101,10 @@ html_static_path = ["_static", "logo"]
 html_css_files = ["css/nekrt.css"]
 html_show_sphinx = False
 
-# The site palette (teal, navy, orange). Furo follows the reader's
-# system light/dark setting and offers a toggle; these are its two palettes.
+# The site palette: violet brand colors on cool neutrals. Only the logo uses
+# magma (docs/source/logo/nekrt_logo.py). Furo follows the reader's system
+# light/dark setting and offers a toggle; these are its two palettes.
 # docs/doxygen/customization.css uses the same colors for the Doxygen pages.
-_TEAL = "#005D82"
-_NAVY = "#04364A"
-_ORANGE = "#D34305"
-
-# Palette sampled from matplotlib's magma, matching docs/source/logo/nekrt_logo.py.
-#   magma(0.00) #000004   magma(0.15) #251255   magma(0.20) #3B0F70
-#   magma(0.30) #641A80   magma(0.55) #CA3E72   magma(0.70) #F7705C
-#   magma(0.75) #FC8961   magma(0.92) #FED89A   magma(0.95) #FDE7A9
-
 html_theme_options = {
     "light_logo": "logo_dark_circle.svg",
     "dark_logo": "logo_white_circle.svg",
@@ -121,34 +113,40 @@ html_theme_options = {
         "color-brand-content": "#641A80",
         "color-brand-visited": "#8C2981",
         "color-foreground-primary": "#1B1424",
-        "color-foreground-secondary": "#5E5670",
+        "color-foreground-secondary": "#564E68",
         "color-background-primary": "#FFFFFF",
-        "color-background-secondary": "#F7F4FA",
-        "color-background-hover": "#ECE6F3",
-        "color-background-border": "#DDD6E6",
+        "color-background-secondary": "#F3F0F7",
+        "color-background-hover": "#E2DBEC",
+        "color-background-border": "#D3CBDF",
+        "color-sidebar-background": "#DDD4EA",
+        "color-sidebar-item-background--hover": "#D4C9E3",
+        "color-sidebar-search-background": "#F5F2F9",
         "color-link--hover": "#CA3E72",
         "color-link-underline--hover": "#CA3E72",
-        "color-inline-code-background": "#F7F4FA",
+        "color-inline-code-background": "#F3F0F7",
         "nekrt-heading": "#251255",
         "nekrt-accent": "#CA3E72",
         "nekrt-table-head": "#3B0F70",
     },
     "dark_css_variables": {
-        "color-brand-primary": "#fddea0",
-        "color-brand-content": "#f1605d",
-        "color-brand-visited": "#c43c75",
-        "color-foreground-primary": "#EFE9F5",
-        "color-foreground-secondary": "#B3A9C4",
-        "color-background-primary": "#07050F",
-        "color-background-secondary": "#000004",
-        "color-background-hover": "#1A1230",
-        "color-background-border": "#2B2142",
-        "color-link--hover": "#FED89A",
-        "color-link-underline--hover": "#FED89A",
-        "color-inline-code-background": "#140E36",
-        "nekrt-heading": "#fcfdbf",
-        "nekrt-accent": "#F7705C",
-        "nekrt-table-head": "#3B0F70",
+        "color-brand-primary": "#B79CF5",
+        "color-brand-content": "#B79CF5",
+        "color-brand-visited": "#9A86C9",
+        "color-foreground-primary": "#E7E4EF",
+        "color-foreground-secondary": "#A9A3B8",
+        "color-background-primary": "#14121C",
+        "color-background-secondary": "#1A1724",
+        "color-background-hover": "#252033",
+        "color-background-border": "#2E2940",
+        "color-sidebar-background": "#0E0C14",
+        "color-sidebar-search-background": "#14121C",
+        "color-sidebar-search-background--focus": "#14121C",
+        "color-link--hover": "#D6C8FB",
+        "color-link-underline--hover": "#D6C8FB",
+        "color-inline-code-background": "#211D2D",
+        "nekrt-heading": "#F1EDF9",
+        "nekrt-accent": "#9D84E8",
+        "nekrt-table-head": "#3B2A66",
     },
     "source_repository": "https://github.com/nekRT/nekRT/",
     "source_branch": "main",
