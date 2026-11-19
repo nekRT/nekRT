@@ -230,6 +230,24 @@ TEST(InputParameters, SourcesBlockIsOptional) {
   EXPECT_TRUE(ParseInputString(yaml).sources.empty());
 }
 
+TEST(InputParameters, ResolveMeshPathIsRelativeToInputFile) {
+  EXPECT_EQ(ResolveMeshPath("examples/lathrop/lathrop.yaml", "lathrop.msh"),
+            "examples/lathrop/lathrop.msh");
+  EXPECT_EQ(ResolveMeshPath("/runs/lathrop.yaml", "meshes/lathrop.msh"),
+            "/runs/meshes/lathrop.msh");
+}
+
+// An input file given without a directory must not resolve to the root
+// directory ("/lathrop.msh").
+TEST(InputParameters, ResolveMeshPathWithBareInputFilename) {
+  EXPECT_EQ(ResolveMeshPath("lathrop.yaml", "lathrop.msh"), "lathrop.msh");
+}
+
+TEST(InputParameters, ResolveMeshPathKeepsAbsoluteMeshPath) {
+  EXPECT_EQ(ResolveMeshPath("examples/lathrop.yaml", "/data/lathrop.msh"),
+            "/data/lathrop.msh");
+}
+
 TEST(InputParameters, UnknownEnumValueListsAvailableValues) {
   const std::string what =
       ParseErrorMessage(Modified("mode: fixed_source", "mode: bogus"));
@@ -305,7 +323,9 @@ TEST(InputParameters, ParseErrorLineNumberIsOneBased) {
 TEST(InputParameters, ReadsFileAndPrefixesErrorsWithFilename) {
   const std::string good = testing::TempDir() + "good.yaml";
   std::ofstream(good) << kValidYaml;
-  EXPECT_EQ(ReadInputFile(good).problem_params.name, "lathrop");
+  const InputParameters input = ReadInputFile(good);
+  EXPECT_EQ(input.problem_params.name, "lathrop");
+  EXPECT_EQ(input.mesh_params.filename, ResolveMeshPath(good, "lathrop.msh"));
 
   const std::string bad = testing::TempDir() + "bad.yaml";
   std::ofstream(bad) << "version: 0\nproblem:\n  name: x\n";

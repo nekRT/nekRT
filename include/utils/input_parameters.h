@@ -200,6 +200,21 @@ struct InputParameters {
 };
 
 /**
+ * @brief Resolves the mesh file name from the input file against the input
+ * file's directory.
+ *
+ * A relative `mesh_filename` is relative to the directory of `input_filename`,
+ * not to the working directory. An absolute `mesh_filename` is returned
+ * unchanged.
+ *
+ * @param input_filename Path to the YAML input file, as given by the user.
+ * @param mesh_filename The `mesh.filename` entry of the input file.
+ * @return Path to the mesh file.
+ */
+std::string ResolveMeshPath(const std::string& input_filename,
+                            const std::string& mesh_filename);
+
+/**
  * @brief Parses YAML input text.
  *
  * Only checks that required keys are present and enum spellings are known;
@@ -213,6 +228,9 @@ InputParameters ParseInputString(std::string yaml);
 
 /**
  * @brief Reads and parses a YAML input file.
+ *
+ * The mesh file name is resolved against the input file's directory (see
+ * ResolveMeshPath()).
  *
  * @param filename Path to the YAML input file.
  * @return The parsed input parameters.

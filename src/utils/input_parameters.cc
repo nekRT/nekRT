@@ -374,16 +374,23 @@ InputParameters ReadInputFile(const std::string& filename) {
   std::string contents((std::istreambuf_iterator<char>(input_file)),
                        std::istreambuf_iterator<char>());
 
+  InputParameters input_params;
   try {
-    InputParameters input_params = ParseInputString(std::move(contents));
-    std::filesystem::path path(filename);
-    std::string full_mesh_path =
-        path.parent_path().string() + "/" + input_params.mesh_params.filename;
-    input_params.mesh_params.filename = full_mesh_path;
-    return input_params;
+    input_params = ParseInputString(std::move(contents));
   } catch (const Error& e) {
     throw Error(filename + ": " + e.what());
   }
+  input_params.mesh_params.filename =
+      ResolveMeshPath(filename, input_params.mesh_params.filename);
+  return input_params;
+}
+
+std::string ResolveMeshPath(const std::string& input_filename,
+                            const std::string& mesh_filename) {
+  // operator/ returns the right-hand side when it is absolute, and adds no
+  // separator when the left-hand side is empty.
+  return (std::filesystem::path(input_filename).parent_path() / mesh_filename)
+      .string();
 }
 
 namespace {
