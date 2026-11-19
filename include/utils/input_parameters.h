@@ -77,9 +77,8 @@ struct SourceParams {
   /// @brief Kind of source
   SourceType type = SourceType::Volumetric;
 
-  /// @brief Source strength per group in n/cm^3/s/str, as expressions in terms
-  /// of position, ordered lowest energy to highest.
-  std::vector<std::string> expression;
+  /// @brief Isotropic source strength per group in n/cm^3/s/str
+  std::vector<double> strengths;
 };
 
 /**
