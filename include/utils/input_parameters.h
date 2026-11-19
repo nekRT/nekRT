@@ -64,9 +64,6 @@ struct MaterialParams {
   /// the entry is `scatter_moments[(moment * G + from) * G + to]` with `G` =
   /// `total_xs.size()`. Holds `G * G` entries per listed moment.
   std::vector<double> scatter_moments;
-
-  /// @brief Number of Legendre scattering moments used.
-  int n_legendre_moments;
 };
 
 /**
