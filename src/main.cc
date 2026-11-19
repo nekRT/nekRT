@@ -6,6 +6,7 @@
 #include <string>
 
 #include "materials/material.h"
+#include "sources/source.h"
 #include "utils/errors.h"
 #include "utils/input_parameters.h"
 #include "utils/output.h"
@@ -32,6 +33,10 @@ int main(int argc, char** argv) {
   // create materials
   std::vector<nekrt::Material> materials =
       nekrt::BuildMaterials(input_params.materials);
+
+  // create sources
+  std::vector<nekrt::Source> sources =
+      nekrt::BuildSources(input_params.sources);
 
   // load mesh
   mfem::Mesh mesh(input_params.mesh_params.filename);
