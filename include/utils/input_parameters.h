@@ -6,6 +6,7 @@
 
 #include <cstddef>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "quadrature/quad_set_params.h"
@@ -198,6 +199,27 @@ struct InputParameters {
   /// @brief Output parameters
   OutputParams output_params;
 };
+
+/**
+ * @brief Creates a map from each entry's name to its index in `entries`.
+ *
+ * The Build*() functions (for example BuildMaterials()) keep the input order,
+ * so the index of an entry is also the ID of the object built from it.
+ *
+ * @tparam T A parameter struct with a `name` member, such as MaterialParams.
+ * @param entries Entries with unique names (see CheckInputParameters()).
+ * @return Map from entry name to its index in `entries`.
+ */
+template <typename T>
+std::unordered_map<std::string, int> CreateNameIndexMap(
+    const std::vector<T>& entries) {
+  std::unordered_map<std::string, int> name_to_index;
+  name_to_index.reserve(entries.size());
+  for (int i = 0; i < static_cast<int>(entries.size()); ++i) {
+    name_to_index.emplace(entries[i].name, i);
+  }
+  return name_to_index;
+}
 
 /**
  * @brief Resolves the mesh file name from the input file against the input

@@ -19,53 +19,42 @@ namespace nekrt {
  *
  */
 struct Region {
-  /// @brief Material ID
+  /// @brief Index of the region's material in the material vector.
   int material_id = -1;
 
-  /// @brief Source ID
+  /// @brief Index of the region's source in the source vector, or -1 for a
+  /// source-free region.
   int source_id = -1;
 };
 
 /**
- * @brief Construct the Region objects used in the simulation.
+ * @brief Constructs the Region objects used in the simulation.
  *
- * @param region_params User-set region parameters
- * @param material_id_map Material ID map
- * @param source_id_map Source ID map
- * @return std::vector<Region>
+ * @param region_params User-set region parameters.
+ * @param material_id_map Material name to material index (see
+ *   CreateNameIndexMap()).
+ * @param source_id_map Source name to source index (see CreateNameIndexMap()).
+ * @return Regions in the same order as `region_params`, so the index of a
+ *   region is its ID.
+ * @throws Error If a region names a material or source that is not in the
+ *   maps.
  */
 std::vector<Region> BuildRegions(
     const std::vector<RegionParams>& region_params,
     const std::unordered_map<std::string, int>& material_id_map,
     const std::unordered_map<std::string, int>& source_id_map);
 
-std::unordered_map<std::string, int> CreateRegionIDMap(
-    const std::vector<RegionParams>& region_params);
-
 /**
- * @brief Builds a table from mesh element attribute to region index.
+ * @brief Creates an array mapping each element to the ID of its region.
  *
  * Each region is looked up in the mesh as the physical group `region:<name>`.
+ * For an element `e`, its Region is `regions[element_regions[e]]`.
  *
- * @param region_id_map Region name to region index.
+ * @param region_id_map Region name to region index (see CreateNameIndexMap()).
  * @param mesh Mesh loaded from a GMSH file.
- * @return Table indexed by element attribute. Attributes that no region claims
- *   hold -1.
- * @throws Error If a region is missing from the mesh, lists an attribute the
- *   mesh does not use, or shares an attribute with another region.
- */
-mfem::Array<int> AttributeToRegionIndex(
-    const std::unordered_map<std::string, int>& region_id_map,
-    const mfem::Mesh& mesh);
-
-/**
- * @brief Creates an array mapping the element number to the region ID that it
- * contains. For an element number `e`, we can get the Region struct by called
- * `regions[element_regions[e]]`.
- *
- * @param region_id_map Map from a region name to its ID
- * @param mesh Mesh
- * @return mfem::Array<int>
+ * @return Region index of each element, of size `mesh.GetNE()`.
+ * @throws Error If AttributeToIndex() fails, or an element has an attribute
+ *   that no region claims.
  */
 mfem::Array<int> CreateElementRegions(
     const std::unordered_map<std::string, int>& region_id_map,

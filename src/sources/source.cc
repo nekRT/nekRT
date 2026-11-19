@@ -3,31 +3,20 @@
 
 #include "sources/source.h"
 
+#include <vector>
+
+#include "utils/input_parameters.h"
+
 namespace nekrt {
 
 std::vector<Source> BuildSources(
     const std::vector<SourceParams>& source_params) {
   std::vector<Source> sources;
   sources.reserve(source_params.size());
-
-  for (const auto& params : source_params) {
-    Source source;
-    source.strengths = params.strengths;
-    source.type = params.type;
-    sources.push_back(std::move(source));
+  for (const SourceParams& params : source_params) {
+    sources.push_back({.type = params.type, .strengths = params.strengths});
   }
   return sources;
 }
 
-std::unordered_map<std::string, int> CreateSourceIDMap(
-    const std::vector<SourceParams>& source_params) {
-  std::unordered_map<std::string, int> source_id_map;
-
-  int count = 0;
-  for (const auto& params : source_params) {
-    source_id_map[params.name] = count;
-    count++;
-  }
-  return source_id_map;
-}
 }  // namespace nekrt

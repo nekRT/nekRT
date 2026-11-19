@@ -4,7 +4,6 @@
 #ifndef NEKRT_MATERIALS_MATERIAL_H_
 #define NEKRT_MATERIALS_MATERIAL_H_
 
-#include <unordered_map>
 #include <vector>
 
 #include "utils/input_parameters.h"
@@ -26,7 +25,7 @@ struct Material {
   std::vector<double> scatter_moments;
 
   /// @brief Number of Legendre moments in scattering matrix.
-  int n_legendre_moments;
+  int n_legendre_moments = 0;
 };
 
 /**
@@ -54,23 +53,15 @@ inline double GetScatterMoment(const int moment_number,
 /**
  * @brief Builds the vector of materials used in the simulation.
  *
- * @param material_params MaterialParams objects.
- * @return std::vector<Material>
+ * @param material_params User-set material parameters, already checked by
+ *   CheckMaterialParams().
+ * @return Materials in the same order as `material_params`, so the index of a
+ *   material is its ID.
  * @todo For now, this function only handles when cross sections are explicitly
  * given. Later, we will need to have a branch to handle NJOY or ENDF8 cross
  * section generation.
  */
 std::vector<Material> BuildMaterials(
-    const std::vector<MaterialParams>& material_params);
-
-/**
- * @brief Create a Material ID Map to link a material name to its ID (location
- * in the global material vector)
- *
- * @param material_params User material parameters
- * @return std::unordered_map<std::string, int>
- */
-std::unordered_map<std::string, int> CreateMaterialIDMap(
     const std::vector<MaterialParams>& material_params);
 
 }  // namespace nekrt

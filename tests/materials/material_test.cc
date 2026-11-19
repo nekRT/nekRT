@@ -6,8 +6,10 @@
 #include <gtest/gtest.h>
 
 #include <numeric>
+#include <vector>
 
 #include "../tests/constants.h"
+#include "utils/input_parameters.h"
 
 namespace nekrt {
 namespace {
@@ -73,6 +75,36 @@ TEST(MaterialsMaterial, GetScatterMomentDistinguishesFromAndTo) {
   material.scatter_moments = {0.1, 0.2, 0.3, 0.4};
   EXPECT_NEAR(GetScatterMoment(0, 0, 1, material, 2), 0.2, kExpNearTolerance);
   EXPECT_NEAR(GetScatterMoment(0, 1, 0, material, 2), 0.3, kExpNearTolerance);
+}
+
+TEST(MaterialsMaterial, BuildMaterialsCopiesCrossSections) {
+  MaterialParams params;
+  params.name = "fuel";
+  params.total_xs = {0.75, 1.5};
+  params.scatter_moments = {0.1, 0.2, 0.3, 0.4};
+
+  const std::vector<Material> materials = BuildMaterials({params});
+
+  ASSERT_EQ(materials.size(), 1);
+  EXPECT_EQ(materials[0].total_xs, params.total_xs);
+  EXPECT_EQ(materials[0].scatter_moments, params.scatter_moments);
+}
+
+// n_legendre_moments is the number of G x G blocks in scatter_moments.
+TEST(MaterialsMaterial, BuildMaterialsCountsLegendreMoments) {
+  MaterialParams one_group;  // 1 group, 3 moments.
+  one_group.total_xs = {1.0};
+  one_group.scatter_moments = {0.5, 0.1, 0.01};
+  MaterialParams two_groups;  // 2 groups, 1 moment.
+  two_groups.total_xs = {1.0, 2.0};
+  two_groups.scatter_moments = {0.1, 0.2, 0.3, 0.4};
+
+  const std::vector<Material> materials =
+      BuildMaterials({one_group, two_groups});
+
+  ASSERT_EQ(materials.size(), 2);
+  EXPECT_EQ(materials[0].n_legendre_moments, 3);
+  EXPECT_EQ(materials[1].n_legendre_moments, 1);
 }
 
 }  // namespace nekrt

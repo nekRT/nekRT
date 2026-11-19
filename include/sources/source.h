@@ -4,7 +4,6 @@
 #ifndef NEKRT_SOURCES_SOURCE_H_
 #define NEKRT_SOURCES_SOURCE_H_
 
-#include <unordered_map>
 #include <vector>
 
 #include "utils/enums.h"
@@ -18,29 +17,21 @@ namespace nekrt {
  */
 struct Source {
   /// @brief Type of source.
-  SourceType type;
+  SourceType type = SourceType::Volumetric;
 
-  /// @brief Isotropic strengths of source in n/cm3/s/str.
+  /// @brief Isotropic source strength per group in n/cm^3/s/str, ordered
+  /// lowest energy to highest.
   std::vector<double> strengths;
 };
 
 /**
- * @brief Build the vector of sources for the simulation.
+ * @brief Builds the vector of sources used in the simulation.
  *
- * @param source_params Source parameters from the user.
- * @return std::vector<Source>
+ * @param source_params User-set source parameters.
+ * @return Sources in the same order as `source_params`, so the index of a
+ *   source is its ID.
  */
 std::vector<Source> BuildSources(
-    const std::vector<SourceParams>& source_params);
-
-/**
- * @brief Create a Source ID map to map source names to their ID (location in
- * global source vector)
- *
- * @param source_params User source parameters
- * @return std::unordered_map<std::string, int>
- */
-std::unordered_map<std::string, int> CreateSourceIDMap(
     const std::vector<SourceParams>& source_params);
 
 }  // namespace nekrt

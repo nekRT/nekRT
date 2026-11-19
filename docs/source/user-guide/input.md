@@ -39,7 +39,8 @@ See {doc}`meshes` for more information on how nekRT expects meshes to be formatt
 The `boundary_conditions` block contains the list of all boundaries in the simulation.
 As discussed in {ref}`user-guide/meshes:Boundary Conditions and Regions`, the mesh on which the simulation is run must contain information about where boundary conditions are.
 The `name` field in the boundary condition **must** match the prefix-free name in the mesh.
-For example, if the mesh contains a group named `boundary_condition:reflector`, the name in the block must be `reflector`.
+For example, if the mesh contains a group named `boundary:reflector`, the name in the block must be `reflector`.
+Every boundary element in the mesh must belong to one of the listed boundaries.
 
 ```{schema-block} boundary_conditions
 ```
@@ -76,9 +77,10 @@ The `sources` block is reserved for within-volume sources, such as volumetric an
 ## Regions
 
 A "region" in nekRT is physical grouping of a material and (optionally) a source(s).
-Like boundary conditions, a region for an element is specified in the mesh itself using the `regions:` prefix (see {ref}`user-guide/meshes:Boundary Conditions and Regions`).
+Like boundary conditions, a region for an element is specified in the mesh itself using the `region:` prefix (see {ref}`user-guide/meshes:Boundary Conditions and Regions`).
 The `name` of a region must match the prefix-free name in the mesh to be valid.
-For example, `region:MOX fuel` must be named `MOX fuel`.
+For example, `region:mox_fuel` must be named `mox_fuel`.
+Every element in the mesh must belong to one of the listed regions.
 The `material` of a region must name an entry of the `materials` block, and its optional `source` must name an entry of the `sources` block.
 
 

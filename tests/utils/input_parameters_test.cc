@@ -233,6 +233,14 @@ TEST(InputParameters, SourcesBlockIsOptional) {
   EXPECT_TRUE(ParseInputString(yaml).sources.empty());
 }
 
+TEST(InputParameters, CreateNameIndexMapKeepsInputOrder) {
+  const InputParameters input = ParseInputString(kValidYaml);
+  const auto region_ids = CreateNameIndexMap(input.regions);
+  ASSERT_EQ(region_ids.size(), 2u);
+  EXPECT_EQ(region_ids.at("fuel_region"), 0);
+  EXPECT_EQ(region_ids.at("moderator_region"), 1);
+}
+
 TEST(InputParameters, ResolveMeshPathIsRelativeToInputFile) {
   EXPECT_EQ(ResolveMeshPath("examples/lathrop/lathrop.yaml", "lathrop.msh"),
             "examples/lathrop/lathrop.msh");

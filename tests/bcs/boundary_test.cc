@@ -17,6 +17,9 @@
 namespace nekrt {
 namespace {
 
+// The edge cases of the attribute lookup are tested on AttributeToIndex() in
+// tests/mesh/attributes_test.cc.
+
 // Two-element mesh with six boundary elements. The first three boundary
 // elements have attribute 1 and the rest have attribute 2, like a GMSH mesh
 // with two physical curves.
@@ -47,71 +50,6 @@ TEST(BuildBoundariesTest, KeepsOrderAndType) {
   EXPECT_EQ(boundaries[1].type, BoundaryType::Reflective);
 }
 
-TEST(CreateBoundaryIDMapTest, MapsNameToIndex) {
-  const std::vector<BoundaryParams> params = {
-      {"outer_wall", BoundaryType::Vacuum},
-      {"reflective_wall", BoundaryType::Reflective}};
-
-  const auto id_map = CreateBoundaryIDMap(params);
-
-  ASSERT_EQ(id_map.size(), 2);
-  EXPECT_EQ(id_map.at("outer_wall"), 0);
-  EXPECT_EQ(id_map.at("reflective_wall"), 1);
-}
-
-TEST(AttributeToBoundaryIndexTest, MapsEachAttributeToItsBoundary) {
-  mfem::Mesh mesh = TwoAttributeMesh();
-  AddGroup(mesh, "boundary:outer_wall", 1);
-  AddGroup(mesh, "boundary:reflective_wall", 2);
-  const std::unordered_map<std::string, int> boundary_ids = {
-      {"outer_wall", 0}, {"reflective_wall", 1}};
-
-  const mfem::Array<int> table = AttributeToBoundaryIndex(boundary_ids, mesh);
-
-  ASSERT_EQ(table.Size(), 3);
-  EXPECT_EQ(table[0], -1);  // Attribute 0 is never used.
-  EXPECT_EQ(table[1], 0);
-  EXPECT_EQ(table[2], 1);
-}
-
-TEST(AttributeToBoundaryIndexTest, UnclaimedAttributeStaysMinusOne) {
-  mfem::Mesh mesh = TwoAttributeMesh();
-  AddGroup(mesh, "boundary:outer_wall", 1);
-  const std::unordered_map<std::string, int> boundary_ids = {{"outer_wall", 0}};
-
-  const mfem::Array<int> table = AttributeToBoundaryIndex(boundary_ids, mesh);
-
-  EXPECT_EQ(table[1], 0);
-  EXPECT_EQ(table[2], -1);
-}
-
-TEST(AttributeToBoundaryIndexTest, MissingGroupThrows) {
-  mfem::Mesh mesh = TwoAttributeMesh();
-  AddGroup(mesh, "boundary:outer_wall", 1);
-  const std::unordered_map<std::string, int> boundary_ids = {
-      {"outer_wall", 0}, {"reflective_wall", 1}};
-
-  EXPECT_THROW(AttributeToBoundaryIndex(boundary_ids, mesh), Error);
-}
-
-TEST(AttributeToBoundaryIndexTest, SharedAttributeThrows) {
-  mfem::Mesh mesh = TwoAttributeMesh();
-  AddGroup(mesh, "boundary:outer_wall", 1);
-  AddGroup(mesh, "boundary:reflective_wall", 1);
-  const std::unordered_map<std::string, int> boundary_ids = {
-      {"outer_wall", 0}, {"reflective_wall", 1}};
-
-  EXPECT_THROW(AttributeToBoundaryIndex(boundary_ids, mesh), Error);
-}
-
-TEST(AttributeToBoundaryIndexTest, AttributeNotInMeshThrows) {
-  mfem::Mesh mesh = TwoAttributeMesh();
-  AddGroup(mesh, "boundary:outer_wall", 7);
-  const std::unordered_map<std::string, int> boundary_ids = {{"outer_wall", 0}};
-
-  EXPECT_THROW(AttributeToBoundaryIndex(boundary_ids, mesh), Error);
-}
-
 TEST(CreateElementBoundariesTest, MapsEachBoundaryElement) {
   mfem::Mesh mesh = TwoAttributeMesh();
   AddGroup(mesh, "boundary:outer_wall", 1);
@@ -126,6 +64,17 @@ TEST(CreateElementBoundariesTest, MapsEachBoundaryElement) {
   for (int b = 0; b < mesh.GetNBE(); b++) {
     EXPECT_EQ(element_boundaries[b], b < 3 ? 0 : 1) << "boundary element " << b;
   }
+}
+
+// Boundary attributes are looked up in the boundary attribute sets, not the
+// element ones.
+TEST(CreateElementBoundariesTest, IgnoresElementAttributeSets) {
+  mfem::Mesh mesh = TwoAttributeMesh();
+  mesh.attribute_sets.CreateAttributeSet("boundary:outer_wall");
+  mesh.attribute_sets.AddToAttributeSet("boundary:outer_wall", 1);
+  const std::unordered_map<std::string, int> boundary_ids = {{"outer_wall", 0}};
+
+  EXPECT_THROW(CreateElementBoundaries(boundary_ids, mesh), Error);
 }
 
 TEST(CreateElementBoundariesTest, UnlistedAttributeThrows) {
