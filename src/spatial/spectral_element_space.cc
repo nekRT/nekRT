@@ -7,6 +7,7 @@ namespace nekrt {
 SpectralElementSpace::SpectralElementSpace(mfem::Mesh& mesh,
                                            const SpatialParams& spatial_params)
     : order_(spatial_params.order),
+      gll_rules_(0, mfem::Quadrature1D::GaussLobatto),
       fe_collection_(order_, mesh.Dimension(), mfem::BasisType::GaussLobatto),
       fe_space_(&mesh, &fe_collection_),
       volume_rule_(

@@ -15,13 +15,13 @@ class SpectralElementSpace {
 
   int order() const { return order_; }
   mfem::FiniteElementSpace& fe_space() { return fe_space_; }
-  const mfem::IntegrationRule& volume_rule() { return *volume_rule_; }
-  const mfem::IntegrationRule& face_rule() { return *face_rule_; }
+  const mfem::IntegrationRule& volume_rule() const { return *volume_rule_; }
+  const mfem::IntegrationRule& face_rule() const { return *face_rule_; }
 
  private:
   const int order_;
   mfem::IntegrationRules gll_rules_;
-  const mfem::L2_FECollection fe_collection_;
+  const mfem::H1_FECollection fe_collection_;
   mfem::FiniteElementSpace fe_space_;
   const mfem::IntegrationRule* volume_rule_;
   const mfem::IntegrationRule* face_rule_;
