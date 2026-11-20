@@ -63,7 +63,7 @@ mfem::Array<int> CreateElementRegions(
 
 mfem::Vector GetTotalXSFromRegions(const mfem::Array<int>& element_regions,
                                    const std::vector<Region>& regions,
-                                   std::vector<Material>& materials,
+                                   const std::vector<Material>& materials,
                                    const int energy_group);
 
 }  // namespace nekrt
