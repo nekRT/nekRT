@@ -42,7 +42,7 @@ angular:
 
 spatial:
   node_placement: gauss_lobatto_legendre
-  nodes_per_axis: 3
+  order: 2
 
 solver:
   source_iterations:

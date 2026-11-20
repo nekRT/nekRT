@@ -151,6 +151,6 @@ The checks are:
   Each material needs at least one energy group and one scattering moment, and all materials must have the same number of energy groups.
 - Each source needs exactly one strength per energy group, and every strength must be finite and greater than or equal to zero.
 - Each region's `material` must be defined in `materials`, and its `source`, if given, must be defined in `sources`.
-- `nodes_per_axis` must be at least 2.
+- The spatial `order` must be at least 1.
 - Each quadrature set needs at least one direction (`n_directions`).
 - The `tolerance` must be greater than zero, and `max_iterations` must be at least 1.

@@ -52,7 +52,7 @@ angular:
   azimuthal_quad_set: { type: trapezoid, n_directions: 6 }
 spatial:
   node_placement: gauss_lobatto_legendre
-  nodes_per_axis: 3
+  order: 2
 solver:
   source_iterations:
     tolerance: 1.0e-6
@@ -138,7 +138,7 @@ TEST(InputParameters, QuadSetMissingNDirectionsThrows) {
 
 TEST(InputParameters, ReadsNumbers) {
   const InputParameters input = ParseInputString(kValidYaml);
-  EXPECT_EQ(input.spatial_params.nodes_per_axis, 3u);
+  EXPECT_EQ(input.spatial_params.order, 2u);
   EXPECT_EQ(input.spatial_params.se_node_placement,
             QuadSetType::GaussLobattoLegendre);
   EXPECT_DOUBLE_EQ(input.solver_params.source_iter_params.tolerance, 1.0e-6);
@@ -363,7 +363,7 @@ TEST(InputParameters, ReadsLathropExample) {
                    1.0 / (4.0 * std::numbers::pi));
   EXPECT_EQ(input.angular_params.polar_quad_set.n_points, 4u);
   EXPECT_EQ(input.angular_params.azimuthal_quad_set.n_points, 4u);
-  EXPECT_EQ(input.spatial_params.nodes_per_axis, 3u);
+  EXPECT_EQ(input.spatial_params.order, 2u);
   EXPECT_EQ(input.output_params.export_values.size(), 2u);
 }
 
@@ -484,9 +484,9 @@ TEST(InputChecks, NegativeSourceStrengthThrows) {
       {"Source 'square_source'", "strength[1]", "must be finite and >= 0"});
 }
 
-TEST(InputChecks, TooFewNodesPerAxisThrows) {
-  ExpectParseErrorContains(Modified("nodes_per_axis: 3", "nodes_per_axis: 1"),
-                           {"nodes_per_axis", "at least 2"});
+TEST(InputChecks, OrderBelowOneThrows) {
+  ExpectParseErrorContains(Modified("order: 2", "order: 0"),
+                           {"order", "at least 1"});
 }
 
 TEST(InputChecks, InvalidSolverSettingsThrow) {
@@ -576,13 +576,13 @@ TEST(InputChecks, NonFiniteSourceStrengthsThrow) {
   EXPECT_THROW(CheckSourceParams({source}), Error);
 }
 
-TEST(InputChecks, SpatialNodesPerAxisBoundary) {
+TEST(InputChecks, SpatialOrderBoundary) {
   SpatialParams spatial;
-  spatial.nodes_per_axis = 0;
+  spatial.order = 0;
   EXPECT_THROW(CheckSpatialParams(spatial), Error);
-  spatial.nodes_per_axis = 1;
-  EXPECT_THROW(CheckSpatialParams(spatial), Error);
-  spatial.nodes_per_axis = 2;
+  spatial.order = 1;
+  EXPECT_NO_THROW(CheckSpatialParams(spatial));
+  spatial.order = 2;
   EXPECT_NO_THROW(CheckSpatialParams(spatial));
 }
 

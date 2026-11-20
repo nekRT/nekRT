@@ -217,16 +217,16 @@
       "description": "Spatial discretization.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["node_placement", "nodes_per_axis"],
+      "required": ["node_placement", "order"],
       "properties": {
         "node_placement": {
           "description": "Placement of nodes within each element.",
           "enum": ["gauss_lobatto_legendre"]
         },
-        "nodes_per_axis": {
-          "description": "Number of nodes along each axis of an element.",
+        "order": {
+          "description": "Polynomial order of the elements.",
           "type": "integer",
-          "minimum": 2
+          "minimum": 1
         }
       }
     },

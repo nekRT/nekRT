@@ -139,8 +139,8 @@ struct SpatialParams {
   /// GaussLobattoLegendre set.
   QuadSetType se_node_placement = QuadSetType::GaussLobattoLegendre;
 
-  /// @brief Number of nodes along each axis of an element (at least 2).
-  std::size_t nodes_per_axis = 2;
+  /// @brief Polynomial order of the elements (at least 1).
+  std::size_t order = 1;
 };
 
 /**
@@ -332,11 +332,11 @@ void CheckRegionParams(const std::vector<RegionParams>& region_params);
 /**
  * @brief Checks the `spatial` block.
  *
- * Gauss-Lobatto-Legendre elements need at least 2 nodes per axis, because the
- * element end points are nodes.
+ * Gauss-Lobatto-Legendre elements need a polynomial order of at least 1,
+ * because the element end points are nodes.
  *
  * @param spatial_params The spatial parameters to check.
- * @throws Error If `nodes_per_axis` is less than 2.
+ * @throws Error If `order` is less than 1.
  */
 void CheckSpatialParams(const SpatialParams& spatial_params);
 

@@ -229,7 +229,7 @@ void ReadAngular(const ryml::ConstNodeRef& root, AngularParams& angular) {
 void ReadSpatial(const ryml::ConstNodeRef& root, SpatialParams& spatial) {
   spatial.se_node_placement = ParseEnum(
       Require(root, {"spatial", "node_placement"}), kAllowedSpatialQuad);
-  Require(root, {"spatial", "nodes_per_axis"}).load(&spatial.nodes_per_axis);
+  Require(root, {"spatial", "order"}).load(&spatial.order);
 }
 
 void ReadSourceIter(const ryml::ConstNodeRef& root,
@@ -536,10 +536,9 @@ void CheckRegionParams(const std::vector<RegionParams>& region_params) {
 
 void CheckSpatialParams(const SpatialParams& spatial_params) {
   NekRTError(
-      spatial_params.nodes_per_axis < 2,
-      "`spatial.nodes_per_axis` is " +
-          std::to_string(spatial_params.nodes_per_axis) +
-          ", but at least 2 nodes per axis are required per spectral element.");
+      spatial_params.order < 1,
+      "`spatial.order` is " + std::to_string(spatial_params.order) +
+          ", but the polynomial order must be at least 1.");
 }
 
 void CheckSolverParams(const SolverParams& solver_params) {
