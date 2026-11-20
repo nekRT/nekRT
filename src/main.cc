@@ -53,7 +53,6 @@ int main(int argc, char** argv) {
     nekrt::NekRTError(!std::filesystem::exists(mesh_filename),
                       "Mesh file '" + mesh_filename + "' not found.");
     Mesh mesh(mesh_filename);
-    const int mesh_dim = mesh.Dimension();
 
     // Map each element to its region and each boundary element to its
     // boundary condition.
@@ -72,9 +71,29 @@ int main(int argc, char** argv) {
 
     nekrt::SpectralElementSpace se_space(mesh, input_params.spatial_params);
 
-    BilinearForm M(&se_space.fe_space());
-    // MassIntegrator mass_integrator(se_space.volume_rule);
-    M.AddDomainIntegrator(new MassIntegrator(&se_space.volume_rule()));
+    // NEEDS TO BE UPDATED ON THE FLY FOR EACH ORDINATE! THIS IS CURRENTLY JUST
+    // FOR TESTING
+    VectorConstantCoefficient ordinate(
+        nekrt::PolarToRectangular(angular_quad_set.first_axis_nodes[0],
+                                  angular_quad_set.second_axis_nodes[0]));
+
+    // NEEDS TO BE UPDATED TO PICK THE CORRECT ENERGY GROUP
+    PWConstCoefficient Sigma_t(
+        nekrt::GetTotalXSFromRegions(element_regions, regions, materials, 0));
+
+    BilinearForm A(&se_space.fe_space());
+    A.AddDomainIntegrator(new MassIntegrator(Sigma_t, &se_space.volume_rule()));
+    A.AddDomainIntegrator(new ConservativeConvectionIntegrator(ordinate, 1.0));
+    A.Assemble(0);
+    A.Finalize(0);
+
+    ConstantCoefficient zero(0.0);
+    LinearForm rhs(&se_space.fe_space());
+    rhs.AddDomainIntegrator(new DomainLFIntegrator(zero));
+    rhs.Assemble();
+
+    mfem::GMRESSolver gmres;
+    gmres.Mult(rhs, psi);
 
   } catch (const nekrt::Error& e) {
     std::cerr << "Error: " << e.what() << '\n';
