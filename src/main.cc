@@ -3,6 +3,7 @@
 
 #include <filesystem>
 #include <iostream>
+#include <memory>
 #include <mfem.hpp>
 #include <string>
 #include <unordered_map>
@@ -13,9 +14,12 @@
 #include "quadrature/quadrature.h"
 #include "regions/region.h"
 #include "sources/source.h"
+#include "spatial/spectral_element_space.h"
 #include "utils/errors.h"
 #include "utils/input_parameters.h"
 #include "utils/output.h"
+
+using namespace mfem;
 
 int main(int argc, char** argv) {
   if (argc < 2) {
@@ -48,13 +52,14 @@ int main(int argc, char** argv) {
     const std::string& mesh_filename = input_params.mesh_params.filename;
     nekrt::NekRTError(!std::filesystem::exists(mesh_filename),
                       "Mesh file '" + mesh_filename + "' not found.");
-    const mfem::Mesh mesh(mesh_filename);
+    Mesh mesh(mesh_filename);
+    const int mesh_dim = mesh.Dimension();
 
     // Map each element to its region and each boundary element to its
     // boundary condition.
-    const mfem::Array<int> element_regions = nekrt::CreateElementRegions(
+    const Array<int> element_regions = nekrt::CreateElementRegions(
         nekrt::CreateNameIndexMap(input_params.regions), mesh);
-    const mfem::Array<int> element_boundaries = nekrt::CreateElementBoundaries(
+    const Array<int> element_boundaries = nekrt::CreateElementBoundaries(
         nekrt::CreateNameIndexMap(input_params.boundaries), mesh);
 
     // create spherical quadrature set
@@ -64,6 +69,13 @@ int main(int argc, char** argv) {
     // The eigenvalue columns are for an eigenvalue run mode, which RunMode
     // does not have yet.
     nekrt::PrintSourceIterationColumns(/*include_eigenvalue=*/false);
+
+    nekrt::SpectralElementSpace se_space(mesh, input_params.spatial_params);
+
+    BilinearForm M(&se_space.fe_space());
+    // MassIntegrator mass_integrator(se_space.volume_rule);
+    M.AddDomainIntegrator(new MassIntegrator(&se_space.volume_rule()));
+
   } catch (const nekrt::Error& e) {
     std::cerr << "Error: " << e.what() << '\n';
     return 1;
