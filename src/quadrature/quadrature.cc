@@ -82,4 +82,12 @@ double Integrate(const mfem::Vector& grid_function,
                "are not the same.");
   return InnerProduct(grid_function, weights);
 }
+
+mfem::Vector PolarToRectangular(const double azimuth, const double polar) {
+  mfem::Vector rect(3);
+  rect[0] = std::sin(polar) * std::cos(azimuth);
+  rect[1] = std::sin(polar) * std::sin(azimuth);
+  rect[2] = std::cos(polar);
+  return rect;
+}
 }  // namespace nekrt

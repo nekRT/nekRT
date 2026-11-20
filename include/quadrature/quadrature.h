@@ -112,6 +112,16 @@ QuadSet2D SphericalQuadSet(const AngularParams& angular_params);
  */
 double Integrate(const mfem::Vector& grid_function,
                  const mfem::Vector& weights);
+
+/**
+ * @brief Given polar angles, compute the equivalent angle in Cartesian unit
+ * vectors on the unit sphere.
+ *
+ * @param azimuth Azimuthal angle (radians)
+ * @param polar Polar angle (radians)
+ * @return mfem::Vector
+ */
+mfem::Vector PolarToRectangular(const double azimuth, const double polar);
 }  // namespace nekrt
 
 #endif  // NEKRT_QUADRATURE_QUADRATURE_H_
