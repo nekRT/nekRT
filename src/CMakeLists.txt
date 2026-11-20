@@ -17,6 +17,7 @@ add_library(
 	regions/region.cc
 	bcs/boundary.cc
 	mesh/attributes.cc
+	spatial/spectral_element_space.cc
 )
 
 target_compile_features(nekrt_lib PUBLIC cxx_std_20)
