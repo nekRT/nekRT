@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "materials/material.h"
 #include "utils/input_parameters.h"
 
 namespace nekrt {
@@ -59,6 +60,11 @@ std::vector<Region> BuildRegions(
 mfem::Array<int> CreateElementRegions(
     const std::unordered_map<std::string, int>& region_id_map,
     const mfem::Mesh& mesh);
+
+mfem::Vector GetTotalXSFromRegions(const mfem::Array<int>& element_regions,
+                                   const std::vector<Region>& regions,
+                                   std::vector<Material>& materials,
+                                   const int energy_group);
 
 }  // namespace nekrt
 
