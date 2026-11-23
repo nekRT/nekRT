@@ -13,12 +13,14 @@
 
 #include "bcs/boundary.h"
 #include "materials/material.h"
+#include "materials/material_bank.h"
 #include "quadrature/quadrature.h"
 #include "regions/region.h"
 #include "sources/source.h"
 #include "spatial/spectral_element_space.h"
 #include "utils/errors.h"
 #include "utils/input_parameters.h"
+#include "utils/legendre_polynomials.h"
 #include "utils/output.h"
 
 using namespace mfem;
@@ -42,9 +44,8 @@ int main(int argc, char** argv) {
     // an entry is its ID.
     const std::vector<nekrt::Boundary> boundaries =
         nekrt::BuildBoundaries(input_params.boundaries);
-    const std::vector<nekrt::Material> materials =
-        nekrt::BuildMaterials(input_params.materials);
-    const std::vector<nekrt::Source> sources =
+    nekrt::MaterialBank material_bank(input_params.materials);
+    const std::vector<nekrt::Source> independent_sources =
         nekrt::BuildSources(input_params.sources);
     const std::vector<nekrt::Region> regions = nekrt::BuildRegions(
         input_params.regions, nekrt::CreateNameIndexMap(input_params.materials),
@@ -60,6 +61,8 @@ int main(int argc, char** argv) {
     // boundary condition.
     const Array<int> element_regions = nekrt::CreateElementRegions(
         nekrt::CreateNameIndexMap(input_params.regions), mesh);
+    const Array<int> element_materials =
+        nekrt::CreateElementMaterials(element_regions, regions);
     const Array<int> element_boundaries = nekrt::CreateElementBoundaries(
         nekrt::CreateNameIndexMap(input_params.boundaries), mesh);
 
@@ -72,44 +75,88 @@ int main(int argc, char** argv) {
     nekrt::PrintSourceIterationColumns(/*include_eigenvalue=*/false);
 
     nekrt::SpectralElementSpace se_space(mesh, input_params.spatial_params);
+    std::vector<nekrt::SpectralElementSpace> se_spaces;
+    se_spaces.reserve(material_bank.n_groups());
 
-    // -------------------------------------------------------------------------
-    GridFunction source(&se_space.fe_space());
-    source = 0.0;  // initialize to 0 source everywhere
+    std::vector<GridFunction> sources;
+    sources.reserve(material_bank.n_groups());
 
-    for (auto n = 0; n < angular_quad_set.n_nodes; n++) {
-      fmt::print("n = {}\n", n);
-      VectorConstantCoefficient ordinate(
-          nekrt::PolarToRectangular(angular_quad_set.first_axis_nodes[n],
-                                    angular_quad_set.second_axis_nodes[n]));
+    for (auto g = 0; g < material_bank.n_groups(); g++) {
+      se_spaces.push_back(
+          nekrt::SpectralElementSpace(mesh, input_params.spatial_params));
+      GridFunction new_source(&se_spaces.back().fe_space());
+      new_source = 0.0;
+      sources.push_back(std::move(new_source));
+    }
 
-      // NEEDS TO BE UPDATED TO PICK THE CORRECT ENERGY GROUP
-      PWConstCoefficient Sigma_t(
-          nekrt::GetTotalXSFromRegions(element_regions, regions, materials, 0));
+    for (auto g_prime = 0; g_prime < material_bank.n_groups(); g_prime++) {
+      for (auto n_prime = 0; n_prime < angular_quad_set.n_nodes; n_prime++) {
+        fmt::print("n = {}\n", n_prime);
 
-      BilinearForm A(&se_space.fe_space());
-      A.AddDomainIntegrator(
-          new MassIntegrator(Sigma_t, &se_space.volume_rule()));
-      A.AddDomainIntegrator(
-          new ConservativeConvectionIntegrator(ordinate, 1.0));
-      A.Assemble(0);
-      A.Finalize(0);
+        auto& se_space = se_spaces[g_prime];
+        auto& source = sources[g_prime];
 
-      GridFunctionCoefficient source_grid_function(&source);
-      LinearForm rhs(&se_space.fe_space());
-      rhs.AddDomainIntegrator(new DomainLFIntegrator(source_grid_function,
-                                                     &se_space.volume_rule()));
-      rhs.Assemble();
+        double quadrature_weight = angular_quad_set.weights[n_prime];
+        mfem::Vector ordinate_cartesian = nekrt::PolarToRectangular(
+            angular_quad_set.first_axis_nodes[n_prime],
+            angular_quad_set.second_axis_nodes[n_prime]);
+        VectorConstantCoefficient ordinate(ordinate_cartesian);
 
-      GridFunction psi(&se_space.fe_space());
-      psi = 0.0;
+        PWConstCoefficient Sigma_t(nekrt::GetTotalXSFromRegions(
+            element_regions, regions, material_bank.materials(), g_prime));
 
-      Array<int> boundary_dofs;
-      se_space.fe_space().GetBoundaryTrueDofs(boundary_dofs);
+        BilinearForm A(&se_space.fe_space());
+        A.AddDomainIntegrator(
+            new MassIntegrator(Sigma_t, &se_space.volume_rule()));
+        A.AddDomainIntegrator(
+            new ConservativeConvectionIntegrator(ordinate, 1.0));
+        A.Assemble(0);
+        A.Finalize(0);
 
-      mfem::GMRESSolver gmres;
-      gmres.SetOperator(A);
-      gmres.Mult(rhs, psi);
+        GridFunctionCoefficient source_grid_function(&source);
+        LinearForm rhs(&se_space.fe_space());
+        rhs.AddDomainIntegrator(new DomainLFIntegrator(
+            source_grid_function, &se_space.volume_rule()));
+        rhs.Assemble();
+
+        GridFunction psi(&se_space.fe_space());
+        psi = 0.0;
+
+        Array<int> boundary_dofs;
+        se_space.fe_space().GetBoundaryTrueDofs(boundary_dofs);
+
+        mfem::GMRESSolver gmres;
+        gmres.SetOperator(A);
+        gmres.Mult(rhs, psi);
+
+        // update source -- this is a running sum through the iterations
+        // we never store the angular flux unless it is specifically desired for
+        // the output
+        for (auto g = 0; g < material_bank.n_groups(); g++) {
+          for (auto n = 0; n < angular_quad_set.n_nodes; n++) {
+            auto scatter_direction = nekrt::PolarToRectangular(
+                angular_quad_set.first_axis_nodes[n],
+                angular_quad_set.second_axis_nodes[n]);
+            double scattering_cosine = ordinate_cartesian * scatter_direction;
+            for (auto i = 0; i < material_bank.n_materials(); i++) {
+              auto element_material = material_bank.GetByID(i);
+              for (auto j = 0; j < element_materials.Size(); j++) {
+                if (element_materials[j] == i) {
+                  for (auto m = 0; m < element_material.n_legendre_moments;
+                       m++) {
+                    sources[g * angular_quad_set.n_nodes + n] +=
+                        nekrt::LegendreExpansionCoefficient(m,
+                                                            scattering_cosine) *
+                        nekrt::GetScatterMoment(m, g_prime, g, element_material,
+                                                material_bank.n_groups()) *
+                        quadrature_weight * psi;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
 
   } catch (const nekrt::Error& e) {
