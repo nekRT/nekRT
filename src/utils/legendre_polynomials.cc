@@ -133,4 +133,8 @@ double ApproximateLegendrePrimeRoot(const int n, const int k) {
   return -(ApproximateLegendreRoot(n, k) + ApproximateLegendreRoot(n, k + 1)) /
          2.0;
 }
+
+double LegendreExpansionCoefficient(const int m, const double mu) {
+  return (2.0 * m + 1) / (4.0 * M_PI) * LegendrePolynomial(m, mu);
+}
 }  // namespace nekrt

@@ -158,6 +158,26 @@ double LegendrePrimeRoot(const int n, const int k);
  * @return double
  */
 double ApproximateLegendrePrimeRoot(const int n, const int k);
+
+/**
+ * @brief A Legendre expansion, such as for the differential scattering cross
+ * section, includes a front coefficient and the Legendre moment:
+ *
+ * \f[
+ * \Sigma_s (\vec{r},\hat{\Omega}'\cdot\hat{\Omega},E'\rightarrow
+ * E)=\sum_{m=0}^\infty\frac{2m+1}{4\pi}P_m(\hat{\Omega}'\cdot\hat{\Omega})\Sigma_{s,m}(\vec{r},E'\rightarrow
+ * E).
+ * \f]
+ *
+ * This function computes
+ * \f$\frac{2m+1}{4\pi}P_m(\hat{\Omega}'\cdot\hat{\Omega})\f$ for some given `m`
+ * and direction cosine \f$\mu=\hat{\Omega}'\cdot\hat{\Omega}\f$.
+ *
+ * @param m Number of term in Legendre expansion
+ * @param mu Direction cosine
+ * @return double
+ */
+double LegendreExpansionCoefficient(const int m, const double mu);
 }  // namespace nekrt
 
 #endif  // NEKRT_UTILS_LEGENDRE_POLYNOMIALS_H_
