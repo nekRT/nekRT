@@ -50,20 +50,6 @@ inline double GetScatterMoment(const int moment_number,
                        from_energy_group * n_energy_groups + to_energy_group];
 }
 
-/**
- * @brief Builds the vector of materials used in the simulation.
- *
- * @param material_params User-set material parameters, already checked by
- *   CheckMaterialParams().
- * @return Materials in the same order as `material_params`, so the index of a
- *   material is its ID.
- * @todo For now, this function only handles when cross sections are explicitly
- * given. Later, we will need to have a branch to handle NJOY or ENDF8 cross
- * section generation.
- */
-std::vector<Material> BuildMaterials(
-    const std::vector<MaterialParams>& material_params);
-
 }  // namespace nekrt
 
 #endif  // NEKRT_MATERIALS_MATERIAL_H_
