@@ -13,6 +13,7 @@ add_library(
 	utils/legendre_polynomials.cc
 	utils/output.cc
 	materials/material.cc
+	materials/material_bank.cc
 	sources/source.cc
 	regions/region.cc
 	bcs/boundary.cc

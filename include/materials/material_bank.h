@@ -8,6 +8,7 @@
 
 #include "materials/material.h"
 #include "utils/input_parameters.h"
+
 namespace nekrt {
 class MaterialBank {
  public:
@@ -24,7 +25,14 @@ class MaterialBank {
    * @param id Material ID (index)
    * @return const Material&
    */
-  const Material& Get(const int id) const { return materials_.at(id); }
+  const Material& GetByID(const int id) const { return materials_.at(id); }
+
+  /**
+   * @brief Get all materials in bank
+   *
+   * @return const std::vector<Material>&
+   */
+  const std::vector<Material>& materials() const { return materials_; }
 
   /**
    * @brief Get the number of energy groups in the simulation
