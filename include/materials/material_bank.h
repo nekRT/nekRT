@@ -41,6 +41,15 @@ class MaterialBank {
    */
   int n_groups() const { return n_groups_; }
 
+  /**
+   * @brief Get the number of Legendre moments in material
+   *
+   * @return int
+   */
+  int n_legendre_moments(const int material_id) const {
+    return materials_.at(material_id).n_legendre_moments;
+  }
+
  private:
   /// @brief Materials in simulation
   const std::vector<Material> materials_;

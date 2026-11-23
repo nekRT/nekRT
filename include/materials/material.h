@@ -4,11 +4,15 @@
 #ifndef NEKRT_MATERIALS_MATERIAL_H_
 #define NEKRT_MATERIALS_MATERIAL_H_
 
+#include <mfem.hpp>
 #include <vector>
 
+#include "regions/region.h"
 #include "utils/input_parameters.h"
 
 namespace nekrt {
+
+struct Region;
 
 /**
  * @brief Struct to hold material information such as cross sections.
@@ -49,6 +53,16 @@ inline double GetScatterMoment(const int moment_number,
       .scatter_moments[moment_number * n_energy_groups * n_energy_groups +
                        from_energy_group * n_energy_groups + to_energy_group];
 }
+
+/**
+ * @brief Create an array of indices where for the material ID within an element
+ *
+ * @param element_regions Array of regions for each element
+ * @param regions Regions in simulation
+ * @return mfem::Array<int>
+ */
+mfem::Array<int> CreateElementMaterials(const mfem::Array<int>& element_regions,
+                                        const std::vector<Region>& regions);
 
 }  // namespace nekrt
 

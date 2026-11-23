@@ -14,6 +14,8 @@
 
 namespace nekrt {
 
+struct Material;
+
 /**
  * @brief A region holds collective information about what exists in a single
  * element.
