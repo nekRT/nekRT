@@ -9,6 +9,7 @@ namespace nekrt {
 QuadSet1D Trapezoid(const int n_points, const double a, const double b) {
   QuadSet1D quad_set;
   TrapezoidNodesAndWeights(quad_set, n_points, a, b);
+  quad_set.n_nodes = quad_set.weights.Size();
   return quad_set;
 }
 

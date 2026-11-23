@@ -22,6 +22,9 @@ struct QuadSet1D {
 
   /// @brief Quadrature nodes
   mfem::Vector nodes;
+
+  /// @brief Number of nodes in quadrature set
+  size_t n_nodes;
 };
 
 /**
@@ -45,6 +48,9 @@ struct QuadSet2D {
 
   /// @brief Second axis' nodes
   mfem::Vector second_axis_nodes;
+
+  /// @brief Number of nodes in quadrature set
+  size_t n_nodes;
 };
 
 /**

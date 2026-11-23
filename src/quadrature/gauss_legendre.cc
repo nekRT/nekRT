@@ -14,6 +14,7 @@ QuadSet1D GaussLegendre(const int n_points) {
   QuadSet1D gauss_legendre;
   GaussLegendreNodes(gauss_legendre, n_points);
   GaussLegendreWeights(gauss_legendre);
+  gauss_legendre.n_nodes = gauss_legendre.weights.Size();
   return gauss_legendre;
 }
 

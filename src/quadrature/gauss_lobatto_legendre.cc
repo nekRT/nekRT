@@ -14,6 +14,7 @@ QuadSet1D GaussLobattoLegendre(const int n_points) {
   QuadSet1D quad_set;
   GaussLobattoLegendreNodes(quad_set, n_points);
   GaussLobattoLegendreWeights(quad_set);
+  quad_set.n_nodes = quad_set.weights.Size();
   return quad_set;
 }
 
