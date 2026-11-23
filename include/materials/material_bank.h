@@ -42,6 +42,13 @@ class MaterialBank {
   int n_groups() const { return n_groups_; }
 
   /**
+   * @brief Getter for the number of materials
+   *
+   * @return int
+   */
+  int n_materials() const { return materials_.size(); }
+
+  /**
    * @brief Get the number of Legendre moments in material
    *
    * @return int
