@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2026, nekRT
 
+#include <fmt/core.h>
+
 #include <filesystem>
 #include <iostream>
 #include <memory>
@@ -71,29 +73,44 @@ int main(int argc, char** argv) {
 
     nekrt::SpectralElementSpace se_space(mesh, input_params.spatial_params);
 
-    // NEEDS TO BE UPDATED ON THE FLY FOR EACH ORDINATE! THIS IS CURRENTLY JUST
-    // FOR TESTING
-    VectorConstantCoefficient ordinate(
-        nekrt::PolarToRectangular(angular_quad_set.first_axis_nodes[0],
-                                  angular_quad_set.second_axis_nodes[0]));
+    // -------------------------------------------------------------------------
+    GridFunction source(&se_space.fe_space());
+    source = 0.0;  // initialize to 0 source everywhere
 
-    // NEEDS TO BE UPDATED TO PICK THE CORRECT ENERGY GROUP
-    PWConstCoefficient Sigma_t(
-        nekrt::GetTotalXSFromRegions(element_regions, regions, materials, 0));
+    for (auto n = 0; n < angular_quad_set.n_nodes; n++) {
+      fmt::print("n = {}\n", n);
+      VectorConstantCoefficient ordinate(
+          nekrt::PolarToRectangular(angular_quad_set.first_axis_nodes[n],
+                                    angular_quad_set.second_axis_nodes[n]));
 
-    BilinearForm A(&se_space.fe_space());
-    A.AddDomainIntegrator(new MassIntegrator(Sigma_t, &se_space.volume_rule()));
-    A.AddDomainIntegrator(new ConservativeConvectionIntegrator(ordinate, 1.0));
-    A.Assemble(0);
-    A.Finalize(0);
+      // NEEDS TO BE UPDATED TO PICK THE CORRECT ENERGY GROUP
+      PWConstCoefficient Sigma_t(
+          nekrt::GetTotalXSFromRegions(element_regions, regions, materials, 0));
 
-    ConstantCoefficient zero(0.0);
-    LinearForm rhs(&se_space.fe_space());
-    rhs.AddDomainIntegrator(new DomainLFIntegrator(zero));
-    rhs.Assemble();
+      BilinearForm A(&se_space.fe_space());
+      A.AddDomainIntegrator(
+          new MassIntegrator(Sigma_t, &se_space.volume_rule()));
+      A.AddDomainIntegrator(
+          new ConservativeConvectionIntegrator(ordinate, 1.0));
+      A.Assemble(0);
+      A.Finalize(0);
 
-    mfem::GMRESSolver gmres;
-    gmres.Mult(rhs, psi);
+      GridFunctionCoefficient source_grid_function(&source);
+      LinearForm rhs(&se_space.fe_space());
+      rhs.AddDomainIntegrator(new DomainLFIntegrator(source_grid_function,
+                                                     &se_space.volume_rule()));
+      rhs.Assemble();
+
+      GridFunction psi(&se_space.fe_space());
+      psi = 0.0;
+
+      Array<int> boundary_dofs;
+      se_space.fe_space().GetBoundaryTrueDofs(boundary_dofs);
+
+      mfem::GMRESSolver gmres;
+      gmres.SetOperator(A);
+      gmres.Mult(rhs, psi);
+    }
 
   } catch (const nekrt::Error& e) {
     std::cerr << "Error: " << e.what() << '\n';
